@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Trip-Planner Card Spec</title>
+<style>
+  @page { size: A4; margin: 0; }
+  :root {
+    --ink: #1f1f1f; --muted: #6b6b6b; --faint: #9a9a9a; --line: #e4e4e4; --bg: #f6f6f4;
+    --coral: #e8505b; --coral-soft: #fdecee; --violet: #6b4fd8; --violet-soft: #efeafd;
+    --amber: #c9821b; --amber-soft: #fbf1e1; --err: #c7372f; --err-soft: #fdeceb; --green: #2f8f4e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif; color: var(--ink); background: #fff; font-size: 10.5pt; line-height: 1.45; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; padding: 16mm 16mm 14mm; position: relative; page-break-after: always; overflow: hidden; }
+  .page:last-child { page-break-after: auto; }
+  .foot { position: absolute; bottom: 8mm; left: 16mm; right: 16mm; display: flex; justify-content: space-between; font-size: 8pt; color: var(--faint); }
+  .eyebrow { font-size: 8pt; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: 26pt; line-height: 1.1; letter-spacing: -.01em; margin: 6px 0 10px; }
+  h2 { font-size: 18pt; letter-spacing: -.01em; margin: 4px 0 4px; }
+  h3 { font-size: 10.5pt; margin: 14px 0 6px; }
+  p.lead { color: var(--muted); max-width: 150mm; }
+  .chip-tag { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 8pt; font-weight: 600; }
+
+  /* layout */
+  .row { display: flex; gap: 10mm; align-items: flex-start; }
+  .col { flex: 1; min-width: 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 8.8pt; }
+  th { text-align: left; font-weight: 600; color: var(--muted); font-size: 7.8pt; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--ink); padding: 4px 6px 4px 0; }
+  td { border-bottom: 1px solid var(--line); padding: 4px 6px 4px 0; vertical-align: top; }
+  td code, p code, li code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 8.3pt; background: var(--bg); padding: 0 3px; border-radius: 3px; }
+  ul.diff { list-style: none; }
+  ul.diff li { padding: 5px 0 5px 0; border-bottom: 1px solid var(--line); font-size: 9.2pt; }
+  ul.diff b { display: inline-block; width: 26mm; color: var(--muted); font-weight: 600; }
+
+  /* annotation markers */
+  .mk { position: absolute; width: 17px; height: 17px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 8.5pt; font-weight: 700; display: grid; place-items: center; box-shadow: 0 0 0 2px #fff; z-index: 5; }
+  .mk.in { position: static; display: inline-grid; margin-right: 6px; flex: none; }
+  ol.legend { list-style: none; font-size: 9pt; }
+  ol.legend li { display: flex; align-items: flex-start; padding: 4px 0; border-bottom: 1px solid var(--line); }
+  ol.legend li span.t { color: var(--muted); }
+
+  /* placeholder image */
+  .ph { background-color: #dcdcd8; background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.35) 0 6px, transparent 6px 14px); position: relative; }
+  .ph .lbl { position: absolute; inset: 0; display: grid; place-items: center; font-size: 8pt; color: #666; letter-spacing: .08em; text-transform: uppercase; }
+
+  /* phone frame */
+  .stage { background: var(--bg); border-radius: 14px; padding: 7mm 0; display: flex; justify-content: center; align-items: flex-start; gap: 14mm; }
+  .card { width: 72mm; background: #fff; border-radius: 14px; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.07); position: relative; overflow: visible; }
+  .card .clip { border-radius: 14px; overflow: hidden; }
+
+  /* stay */
+  .stay .ph { height: 40mm; }
+  .emblem { position: absolute; top: 8px; right: 8px; background: #fff; border-radius: 99px; padding: 3px 9px; font-size: 7.5pt; font-weight: 700; }
+  .stay .body { padding: 10px 12px 12px; }
+  .stay .top { display: flex; justify-content: space-between; gap: 8px; }
+  .stay .name { font-size: 13pt; font-weight: 700; line-height: 1.15; }
+  .stay .loc { font-size: 8.5pt; color: var(--faint); margin-top: 2px; }
+  .pricebox { border: 1.5px solid var(--coral); border-radius: 8px; padding: 4px 8px; text-align: right; flex: none; }
+  .pricebox b { display: block; font-size: 10pt; }
+  .pricebox span { display: block; font-size: 7.5pt; color: var(--muted); }
+  .btn { display: block; text-align: center; border-radius: 8px; padding: 7px; font-weight: 600; font-size: 9pt; }
+  .btn.primary { background: var(--coral); color: #fff; margin-top: 10px; }
+  .btn.ghost { border: 1px solid var(--line); }
+  .btn.sm { display: inline-block; padding: 5px 12px; font-size: 8.5pt; }
+
+  /* stay detail */
+  .detail { width: 62mm; background: #efefec; border-radius: 14px; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.07); display: flex; flex-direction: column; }
+  .detail .ph { height: 34mm; border-radius: 14px 14px 0 0; }
+  .detail .sticky { border-radius: 0 0 14px 14px; }
+  .back { position: absolute; top: 8px; left: 8px; width: 20px; height: 20px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 9pt; }
+  .reco { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,.55); color: #fff; font-size: 7pt; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
+  .detail .body { background: #fff; margin: 0 6px; padding: 10px; border-radius: 0 0 10px 10px; flex: 1; }
+  .detail .name { font-size: 12pt; font-weight: 800; letter-spacing: .02em; }
+  .detail .desc { font-size: 8.5pt; color: var(--muted); margin: 3px 0 7px; }
+  .trust { display: flex; gap: 6px; font-size: 7.5pt; color: var(--ink); flex-wrap: wrap; }
+  .trust span { background: var(--bg); padding: 2px 6px; border-radius: 4px; }
+  .detail .loc { font-size: 8.5pt; margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--line); }
+  .sticky { background: #fff; border-top: 1px solid var(--line); padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .sticky b { font-size: 10pt; display: block; }
+  .sticky small { font-size: 7.5pt; color: var(--muted); }
+
+  /* experience */
+  .exp .imgwrap { padding: 10px 10px 0; position: relative; }
+  .exp .ph { height: 34mm; border-radius: 10px; }
+  .dur { position: absolute; right: 18px; bottom: 8px; background: var(--violet); color: #fff; font-size: 7.5pt; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
+  .exp .body { padding: 9px 12px 12px; }
+  .exp .name { font-size: 13pt; font-weight: 700; line-height: 1.15; }
+  .exp .desc { font-size: 8.5pt; color: var(--muted); margin-top: 2px; }
+  .loccard { margin-top: 9px; border: 1px solid var(--line); border-radius: 10px; padding: 7px 8px; display: flex; gap: 7px; align-items: center; }
+  .pin { width: 20px; height: 20px; border-radius: 50%; background: var(--violet-soft); color: var(--violet); display: grid; place-items: center; font-size: 9pt; flex: none; }
+  .loccard .t b { display: block; font-size: 8.8pt; }
+  .loccard .t span { font-size: 7.5pt; color: var(--muted); }
+  .away { margin-left: auto; background: var(--violet-soft); color: var(--violet); font-size: 7.5pt; font-weight: 700; padding: 2px 7px; border-radius: 99px; flex: none; }
+  .split { display: flex; gap: 6px; margin-top: 10px; }
+  .split .btn { flex: 1; }
+  .split .btn.v { background: var(--violet); color: #fff; }
+
+  /* food */
+  .food .body { padding: 12px; }
+  .food .head { display: flex; gap: 10px; align-items: center; }
+  .food .ph.sq { width: 17mm; height: 17mm; border-radius: 8px; flex: none; }
+  .food .name { font-size: 13pt; font-weight: 700; line-height: 1.15; }
+  .food .rev { font-size: 7.5pt; color: var(--faint); margin-top: 2px; }
+  .chips { display: flex; gap: 5px; margin: 10px 0 8px; }
+  .chips span { font-size: 7.5pt; border: 1px solid var(--line); padding: 2px 8px; border-radius: 99px; }
+  .chips span.on { background: var(--amber-soft); border-color: var(--amber); color: var(--amber); font-weight: 600; }
+  .items { display: flex; gap: 6px; overflow: hidden; margin-right: -12px; }
+  .item { width: 19mm; flex: none; }
+  .item .ph { height: 15mm; border-radius: 6px; }
+  .dot { position: absolute; top: 4px; right: 4px; width: 10px; height: 10px; border: 1.5px solid var(--green); background: #fff; border-radius: 2px; display: grid; place-items: center; }
+  .dot::after { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--green); }
+  .dot.nv { border-color: var(--err); } .dot.nv::after { background: var(--err); }
+  .item b { display: block; font-size: 7.8pt; margin-top: 3px; }
+  .item span { font-size: 7.5pt; color: var(--muted); }
+  .vlist { width: 72mm; background: #fff; border-radius: 12px; padding: 8px 10px; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.07); }
+  .vrow { display: flex; gap: 8px; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--line); }
+  .vrow:last-child { border: 0; }
+  .vrow .ph { width: 11mm; height: 11mm; border-radius: 6px; flex: none; }
+  .vrow b { font-size: 8.5pt; display: block; } .vrow span { font-size: 7.5pt; color: var(--muted); }
+  .vrow .dot { position: static; margin-left: auto; }
+
+  /* chat */
+  .chat { width: 80mm; background: #fff; border-radius: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.07); position: relative; display: flex; flex-direction: column; }
+  .chat .hd { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 9.5pt; }
+  .x { width: 18px; height: 18px; border: 1.5px solid var(--ink); border-radius: 50%; display: grid; place-items: center; font-size: 8pt; }
+  .thread { padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .bub { max-width: 82%; padding: 7px 10px; border-radius: 12px; font-size: 8.6pt; }
+  .bub.me { align-self: flex-end; background: var(--ink); color: #fff; border-bottom-right-radius: 4px; }
+  .bub.ai { align-self: flex-start; background: var(--bg); border-bottom-left-radius: 4px; }
+  .bub.err { background: var(--err-soft); border: 1px solid #f2c3bf; }
+  .bub .acts { text-align: right; margin-top: 6px; }
+  .bub .btn.e { background: var(--err); color: #fff; }
+  .bub .btn.o { border: 1px solid var(--ink); background: #fff; }
+  .typing { display: inline-flex; gap: 3px; align-items: center; }
+  .typing i { width: 5px; height: 5px; border-radius: 50%; background: var(--faint); display: block; }
+  .warn { color: var(--err); font-weight: 800; margin-right: 4px; }
+  .minicards { display: flex; gap: 4px; }
+  .minicards div { flex: 1; border-radius: 6px; padding: 5px; font-size: 7pt; font-weight: 700; border-top: 3px solid; background: #fff; box-shadow: 0 0 0 1px var(--line); }
+  .input { margin: 0 10px 10px; border: 1px solid var(--line); border-radius: 99px; padding: 6px 6px 6px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 8.5pt; color: var(--faint); }
+  .send { width: 20px; height: 20px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-size: 8pt; }
+
+  /* sketch images */
+  .sketch { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+  .sketch img { display: block; width: 100%; }
+  .cap { font-size: 7.8pt; color: var(--faint); margin-top: 4px; }
+
+  /* flow diagram */
+  .flow { display: flex; align-items: stretch; gap: 0; margin-top: 6mm; }
+  .node { border: 1.5px solid var(--ink); border-radius: 10px; padding: 8px 10px; font-size: 8.8pt; background: #fff; flex: 1; }
+  .node b { display: block; font-size: 9.5pt; }
+  .node span { color: var(--muted); font-size: 8pt; }
+  .arrow { width: 9mm; display: grid; place-items: center; font-size: 13pt; color: var(--muted); flex: none; }
+  .node.ok { border-color: var(--green); }
+  .node.bad { border-color: var(--err); background: var(--err-soft); }
+  .order { display: flex; gap: 4mm; margin-top: 4mm; }
+  .order div { flex: 1; border-radius: 10px; padding: 9px 11px; font-size: 8.5pt; }
+  .order div b { display: block; font-size: 11pt; }
+  pre { font-family: Consolas, "Cascadia Mono", monospace; font-size: 7.8pt; line-height: 1.38; background: #1e1e1e; color: #e6e6e6; padding: 10px 12px; border-radius: 10px; white-space: pre; }
+  pre .k { color: #9cdcfe; } pre .s { color: #ce9178; } pre .n { color: #b5cea8; }
+  .note { background: var(--bg); border-radius: 10px; padding: 9px 11px; font-size: 8.8pt; }
+  .rule { border-left: 3px solid var(--err); padding: 6px 10px; background: var(--err-soft); border-radius: 0 8px 8px 0; font-size: 9pt; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<!-- ============ PAGE 1: OVERVIEW ============ -->
+<section class="page">
+  <div class="eyebrow">Trip-planner chat · Prototype spec</div>
+  <h1>Card and error-state spec</h1>
+  <p class="lead">One chat request, three cards, and the chat is never blank. This spec turns the hand sketches in <code>sKETCHES/</code> into card layouts, field lists, a blank mock response and the error states. The build plan is in <code>Meeting-Notes.md</code>.</p>
+
+  <h3 style="margin-top:10mm">The happy path</h3>
+  <div class="flow">
+    <div class="node"><b>Guest asks</b><span>"Plan me a weekend in Kyoto". No login needed.</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><b>Typing bubble</b><span>Three dots while the plan loads.</span></div>
+    <div class="arrow">→</div>
+    <div class="node ok"><b>Three cards</b><span>Stay, Experience, Food, always in this order.</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><b>Act on a card</b><span>Add to trip, pick a time, browse the menu.</span></div>
+  </div>
+
+  <h3 style="margin-top:8mm">When it goes wrong</h3>
+  <div class="flow">
+    <div class="node bad"><b>Request fails</b><span>Error bubble with a red warning sign.</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><b>Try again</b><span>Sends the same request again.</span></div>
+    <div class="arrow">→</div>
+    <div class="node ok"><b>Three cards</b><span>The chat recovers.</span></div>
+  </div>
+  <div class="flow" style="margin-top:3mm">
+    <div class="node bad"><b>Can't be planned</b><span>For example, two countries in 2 days.</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><b>Go with suggestion</b><span>Sends a request the chat can plan.</span></div>
+    <div class="arrow">→</div>
+    <div class="node ok"><b>Three cards</b><span>For the suggested trip.</span></div>
+  </div>
+
+  <h3 style="margin-top:9mm">Three cards that never look alike</h3>
+  <table>
+    <tr><th style="width:22%">Card</th><th>Image</th><th>Biggest text</th><th>Signature element</th><th>Accent</th></tr>
+    <tr><td><b>Stay</b></td><td>Full-width banner</td><td>Stay name</td><td>Boxed price + full-width Add button</td><td><span class="chip-tag" style="background:var(--coral-soft);color:var(--coral)">Coral</span></td></tr>
+    <tr><td><b>Experience</b></td><td>Inset, with duration chip</td><td>Experience name</td><td>Location card inside the card + split buttons</td><td><span class="chip-tag" style="background:var(--violet-soft);color:var(--violet)">Violet</span></td></tr>
+    <tr><td><b>Food</b></td><td>Small square, left</td><td>Restaurant name</td><td>Filter chips + sideways dish row</td><td><span class="chip-tag" style="background:var(--amber-soft);color:var(--amber)">Amber</span></td></tr>
+  </table>
+
+  <h3 style="margin-top:8mm">Build rules</h3>
+  <table>
+    <tr><td style="width:40mm"><b>One component per card</b></td><td><code>StayCard</code>, <code>ExperienceCard</code> and <code>FoodCard</code> are separate, so the layouts stay truly different.</td></tr>
+    <tr><td><b>Stack</b></td><td>TypeScript, Next.js, React and Tailwind. Code on GitHub, one public Vercel link.</td></tr>
+    <tr><td><b>Reach</b></td><td>No login. Works on mobile and web.</td></tr>
+    <tr><td><b>Never blank</b></td><td>Every error has a button that brings the three cards back.</td></tr>
+  </table>
+
+  <div class="foot"><span>Trip-planner chat · Card spec</span><span>1 / 6</span></div>
+</section>
+
+<!-- ============ PAGE 2: STAY ============ -->
+<section class="page">
+  <div class="eyebrow">Card 1 of 3</div>
+  <h2>Stay card</h2>
+  <p class="lead">Where the guest sleeps. It leads with a photo and puts the price where the eye lands next. Tapping the card opens the detail screen.</p>
+
+  <div class="stage" style="margin-top:6mm">
+    <div class="card stay">
+      <div class="clip">
+        <div class="ph"><div class="lbl">Stay photo</div><div class="emblem">★ Guest fav</div></div>
+        <div class="body">
+          <div class="top">
+            <div><div class="name">Stay name</div><div class="loc">Location</div></div>
+            <div class="pricebox"><b>$185 / night</b><span>2 nights</span><span>Fri 11 – Sun 13 Apr</span></div>
+          </div>
+          <div class="btn primary">Add to trip +</div>
+        </div>
+      </div>
+      <div class="mk" style="top:6px;left:-24px">1</div>
+      <div class="mk" style="top:2px;right:-24px">2</div>
+      <div class="mk" style="top:44mm;left:-24px">3</div>
+      <div class="mk" style="top:44mm;right:-24px">4</div>
+      <div class="mk" style="bottom:12px;left:-24px">5</div>
+    </div>
+
+    <div class="detail">
+      <div class="ph"><div class="lbl">Photo</div><div class="back">‹</div><div class="reco">Recommended</div></div>
+      <div class="body">
+        <div class="name">STAY NAME</div>
+        <div class="desc">Short description of the stay, mid size.</div>
+        <div class="trust"><span>★ 4.9</span><span>Guest favourite</span><span>128 reviews</span></div>
+        <div class="loc">Location</div>
+      </div>
+      <div class="sticky"><div><b>$370 total</b><small>2 nights · Fri 11 – Sun 13 Apr</small></div><div class="btn sm" style="background:var(--coral);color:#fff">Add +</div></div>
+      <div class="mk" style="top:30mm;right:-24px">6</div>
+      <div class="mk" style="top:52mm;right:-24px">7</div>
+      <div class="mk" style="bottom:12px;left:-24px">8</div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:6mm">
+    <div class="col">
+      <h3 style="margin-top:0">Callouts</h3>
+      <ol class="legend">
+        <li><span class="mk in">1</span><span>Full-width image <span class="t">across the top of the card</span></span></li>
+        <li><span class="mk in">2</span><span>Popularity emblem <span class="t">on the image</span></span></li>
+        <li><span class="mk in">3</span><span>Stay name <span class="t">is the biggest text. Location sits under it in light grey.</span></span></li>
+        <li><span class="mk in">4</span><span>Price, nights + dates <span class="t">in a box with an accent border. Kyoto weekend: Fri 11 – Sun 13 Apr 2025.</span></span></li>
+        <li><span class="mk in">5</span><span>Primary button <span class="t">on a white card BG</span></span></li>
+        <li><span class="mk in">6</span><span>Detail: white label <span class="t">on the photo, back button top left</span></span></li>
+        <li><span class="mk in">7</span><span>Detail: trust labels <span class="t">rating, popularity, reviews</span></span></li>
+        <li><span class="mk in">8</span><span>Detail: sticky bar <span class="t">on a slightly grey page BG</span></span></li>
+      </ol>
+    </div>
+    <div class="col">
+      <h3 style="margin-top:0">Fields</h3>
+      <table>
+        <tr><th>Field</th><th>Type</th><th>Shown as</th></tr>
+        <tr><td><code>stayName</code></td><td>text</td><td>Biggest text</td></tr>
+        <tr><td><code>location</code></td><td>text</td><td>Small, light grey</td></tr>
+        <tr><td><code>imageUrl</code></td><td>text</td><td>Banner image</td></tr>
+        <tr><td><code>popularityLabel</code></td><td>text</td><td>Emblem</td></tr>
+        <tr><td><code>nightlyPriceUsd</code></td><td>number</td><td>Boxed price</td></tr>
+        <tr><td><code>nights</code></td><td>number</td><td>Under price</td></tr>
+        <tr><td><code>checkIn</code> / <code>checkOut</code></td><td>date</td><td>Price box + sticky bar</td></tr>
+        <tr><td><code>description</code></td><td>text</td><td>Detail, mid size</td></tr>
+        <tr><td><code>rating</code> / <code>reviewCount</code></td><td>number</td><td>Trust labels</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:5mm; align-items:flex-start">
+    <div style="width:80mm"><div class="sketch"><img src="sketch-stay.jpg"></div><div class="cap">Original sketch: stay card and stay detail screen</div></div>
+    <div class="col note">The sketch also allows a divider line between the name and the price instead of the box. This spec uses the box because it gives the Stay card a shape the other two don't have.</div>
+  </div>
+
+  <div class="foot"><span>Trip-planner chat · Card spec</span><span>2 / 6</span></div>
+</section>
+
+<!-- ============ PAGE 3: EXPERIENCE ============ -->
+<section class="page">
+  <div class="eyebrow">Card 2 of 3</div>
+  <h2>Experience card</h2>
+  <p class="lead">Something to do. It tells the guest how long it takes and how far it is from the stay, then lets them read more or book a slot.</p>
+
+  <div class="stage" style="margin-top:6mm">
+    <div class="card exp">
+      <div class="clip">
+        <div class="imgwrap"><div class="ph"><div class="lbl">Experience photo</div></div><div class="dur">2.0 hr</div></div>
+        <div class="body">
+          <div class="name">Experience name</div>
+          <div class="desc">A catchy line on why you should join.</div>
+          <div class="loccard"><div class="pin">⌖</div><div class="t"><b>Place name</b><span>Address</span></div><div class="away">10 min away</div></div>
+          <div class="split"><div class="btn ghost">Know more</div><div class="btn v">Pick time</div></div>
+        </div>
+      </div>
+      <div class="mk" style="top:6px;left:-24px">1</div>
+      <div class="mk" style="top:33mm;right:-24px">2</div>
+      <div class="mk" style="top:41mm;left:-24px">3</div>
+      <div class="mk" style="top:56mm;right:-24px">4</div>
+      <div class="mk" style="bottom:12px;left:-24px">5</div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:6mm">
+    <div class="col">
+      <h3 style="margin-top:0">Callouts</h3>
+      <ol class="legend">
+        <li><span class="mk in">1</span><span>Inset image <span class="t">with rounded corners, set in from the card edge</span></span></li>
+        <li><span class="mk in">2</span><span>Duration chip <span class="t">estimated time, sits on the image</span></span></li>
+        <li><span class="mk in">3</span><span>Experience name <span class="t">is the biggest text, with one catchy line under it</span></span></li>
+        <li><span class="mk in">4</span><span>Location card <span class="t">place, address and distance from the stay. Tap it to open the map or place info.</span></span></li>
+        <li><span class="mk in">5</span><span>Split footer <span class="t"><b>Know more</b> opens the full experience page. <b>Pick time</b> opens a slot picker (could later be "Add to plan").</span></span></li>
+      </ol>
+    </div>
+    <div class="col">
+      <h3 style="margin-top:0">Fields</h3>
+      <table>
+        <tr><th>Field</th><th>Type</th><th>Shown as</th></tr>
+        <tr><td><code>experienceName</code></td><td>text</td><td>Biggest text</td></tr>
+        <tr><td><code>description</code></td><td>text</td><td>Catchy line</td></tr>
+        <tr><td><code>imageUrl</code></td><td>text</td><td>Inset image</td></tr>
+        <tr><td><code>durationHours</code></td><td>number</td><td>Chip on image</td></tr>
+        <tr><td><code>placeName</code></td><td>text</td><td>Location card, line 1</td></tr>
+        <tr><td><code>address</code></td><td>text</td><td>Location card, line 2</td></tr>
+        <tr><td><code>minutesFromStay</code></td><td>number</td><td>"10 min away" chip</td></tr>
+        <tr><td><code>timeSlots</code></td><td>list of text</td><td>Pick time sheet</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:5mm; align-items:flex-start">
+    <div style="width:80mm"><div class="sketch"><img src="sketch-experience.jpg"></div><div class="cap">Original sketch: experience card</div></div>
+    <div class="col note">The location card is the main thing that sets this card apart. It's the only card with a second card inside it, and it links the experience back to the stay.</div>
+  </div>
+
+  <div class="foot"><span>Trip-planner chat · Card spec</span><span>3 / 6</span></div>
+</section>
+
+<!-- ============ PAGE 4: FOOD ============ -->
+<section class="page">
+  <div class="eyebrow">Card 3 of 3</div>
+  <h2>Food card</h2>
+  <p class="lead">Where to eat. The dishes are the hero here, not the building: a small kitchen photo, quick filters, then a row of dishes to browse.</p>
+
+  <div class="stage" style="margin-top:6mm; align-items:flex-start">
+    <div class="card food">
+      <div class="clip">
+        <div class="body">
+          <div class="head"><div class="ph sq"><div class="lbl" style="font-size:6.5pt">Kitchen</div></div><div><div class="name">Restaurant name</div><div class="rev">★ 4.7 · 320 reviews</div></div></div>
+          <div class="chips"><span>Breakfast</span><span>Lunch</span><span class="on">Dinner</span></div>
+          <div class="items">
+            <div class="item"><div class="ph"><span class="dot"></span></div><b>Item 1</b><span>$12</span></div>
+            <div class="item"><div class="ph"><span class="dot nv"></span></div><b>Item 2</b><span>$9</span></div>
+            <div class="item"><div class="ph"><span class="dot"></span></div><b>Item 3</b><span>$15</span></div>
+            <div class="item"><div class="ph"><span class="dot nv"></span></div><b>Item 4</b><span>$11</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="mk" style="top:10px;left:-24px">1</div>
+      <div class="mk" style="top:10px;right:-24px">2</div>
+      <div class="mk" style="top:24mm;left:-24px">3</div>
+      <div class="mk" style="top:33mm;left:-24px">4</div>
+      <div class="mk" style="top:33mm;right:-24px">5</div>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:4px">Alternative: vertical list</div>
+      <div class="vlist">
+        <div class="vrow"><div class="ph"></div><div><b>Item name</b><span>$12 · 1 plate</span></div><span class="dot"></span></div>
+        <div class="vrow"><div class="ph"></div><div><b>Item name</b><span>$9 · 2 pcs</span></div><span class="dot nv"></span></div>
+        <div class="vrow"><div class="ph"></div><div><b>Item name</b><span>$15 · bowl</span></div><span class="dot"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:6mm">
+    <div class="col">
+      <h3 style="margin-top:0">Callouts</h3>
+      <ol class="legend">
+        <li><span class="mk in">1</span><span>Small square photo <span class="t">of the kitchen or a table, left of the name</span></span></li>
+        <li><span class="mk in">2</span><span>Restaurant name <span class="t">is the biggest text. Reviews sit under it, very small.</span></span></li>
+        <li><span class="mk in">3</span><span>Filter chips <span class="t">meal times, or veg / non-veg, halal / non-halal</span></span></li>
+        <li><span class="mk in">4</span><span>Dish row <span class="t">scrolls sideways (a vertical list also works)</span></span></li>
+        <li><span class="mk in">5</span><span>Diet dot <span class="t">green = veg, red = non-veg. Each dish shows its name and price and/or portion.</span></span></li>
+      </ol>
+    </div>
+    <div class="col">
+      <h3 style="margin-top:0">Fields</h3>
+      <table>
+        <tr><th>Field</th><th>Type</th><th>Shown as</th></tr>
+        <tr><td><code>restaurantName</code></td><td>text</td><td>Biggest text</td></tr>
+        <tr><td><code>rating</code> / <code>reviewCount</code></td><td>number</td><td>Very small</td></tr>
+        <tr><td><code>imageUrl</code></td><td>text</td><td>Square photo</td></tr>
+        <tr><td><code>filters</code></td><td>list of text</td><td>Chips</td></tr>
+        <tr><td><code>menuItems[].itemName</code></td><td>text</td><td>Dish name</td></tr>
+        <tr><td><code>menuItems[].imageUrl</code></td><td>text</td><td>Dish thumbnail</td></tr>
+        <tr><td><code>menuItems[].dietLabel</code></td><td>text</td><td>Veg / non-veg dot</td></tr>
+        <tr><td><code>menuItems[].priceUsd</code></td><td>number</td><td>Under the name</td></tr>
+        <tr><td><code>menuItems[].portion</code></td><td>text</td><td>Optional</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:5mm; align-items:flex-start">
+    <div style="width:80mm"><div class="sketch"><img src="sketch-food.jpg"></div><div class="cap">Original sketch: food card and item breakdown</div></div>
+    <div class="col note">No banner image: this is the only card whose picture is a small square, which keeps it visibly different from the Stay card even at a glance.</div>
+  </div>
+
+  <div class="foot"><span>Trip-planner chat · Card spec</span><span>4 / 6</span></div>
+</section>
+
+<!-- ============ PAGE 5: CHAT + ERRORS ============ -->
+<section class="page">
+  <div class="eyebrow">Chat window</div>
+  <h2>Loading and error states</h2>
+  <p class="lead">The thread is never blank. When the plan can't be shown, the guest gets a clear reason and a button that leads back to the three cards.</p>
+
+  <div class="stage" style="margin-top:6mm; align-items:stretch">
+    <div class="chat">
+      <div class="hd">Arpan <span class="x">✕</span></div>
+      <div class="thread">
+        <div class="bub me">Plan me a weekend in Kyoto</div>
+        <div class="bub ai"><span class="typing"><i></i><i></i><i></i></span></div>
+        <div class="eyebrow" style="font-size:6.5pt;text-align:center">then the dots are replaced by</div>
+        <div class="minicards">
+          <div style="border-color:var(--coral)">Stay</div>
+          <div style="border-color:var(--violet)">Experience</div>
+          <div style="border-color:var(--amber)">Food</div>
+        </div>
+      </div>
+      <div class="input">Something else… <span class="send">➤</span></div>
+      <div class="mk" style="top:8px;right:-24px">1</div>
+      <div class="mk" style="top:22mm;left:-24px">2</div>
+      <div class="mk" style="bottom:12px;right:-24px">3</div>
+    </div>
+
+    <div class="chat">
+      <div class="hd">Arpan <span class="x">✕</span></div>
+      <div class="thread">
+        <div class="bub me">Help me build a 2-day itinerary in Japan &amp; Korea</div>
+        <div class="bub ai err"><span class="warn">⚠</span>Sorry, nothing came up for that trip.
+          <div class="acts"><span class="btn sm e">Try again</span></div></div>
+        <div class="bub ai">I can only plan one place at a time. Want me to build a weekend in Tokyo instead?
+          <div class="acts"><span class="btn sm o">Go with Tokyo</span></div></div>
+      </div>
+      <div class="input">Something else… <span class="send">➤</span></div>
+      <div class="mk" style="top:28mm;left:-24px">4</div>
+      <div class="mk" style="top:37mm;right:-24px">5</div>
+      <div class="mk" style="top:60mm;right:-24px">6</div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:6mm">
+    <div class="col">
+      <ol class="legend">
+        <li><span class="mk in">1</span><span>Header <span class="t">guest name, close-chat button</span></span></li>
+        <li><span class="mk in">2</span><span>Typing bubble <span class="t">the loading state, replaced by the three cards</span></span></li>
+        <li><span class="mk in">3</span><span>Input <span class="t">"Something else…" and a send button</span></span></li>
+        <li><span class="mk in">4</span><span>Error bubble <span class="t">error accent colour and a red warning sign</span></span></li>
+        <li><span class="mk in">5</span><span>Try again <span class="t">resends the original request</span></span></li>
+        <li><span class="mk in">6</span><span>Suggested solution <span class="t">"Go with…" sends the suggested request instead</span></span></li>
+      </ol>
+    </div>
+    <div class="col">
+      <table>
+        <tr><th>Part</th><th>Value</th></tr>
+        <tr><td>Error copy</td><td>Short, plain, no blame. Says what happened.</td></tr>
+        <tr><td>Try again</td><td>Inside the error bubble, bottom right. Sends the same request again.</td></tr>
+        <tr><td>Suggestion</td><td>Shown only when the request can't be planned as asked (for example, two countries in 2 days).</td></tr>
+        <tr><td>Forced failure</td><td>Add <code>?fail=once</code> to the address. The first request fails and every request after it works.</td></tr>
+      </table>
+      <div class="rule"><b>Rule:</b> both buttons end with the Stay, Experience and Food cards showing, in that order.</div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:5mm; align-items:flex-start">
+    <div style="width:80mm"><div class="sketch"><img src="sketch-error.jpg"></div><div class="cap">Original sketch: full error mockup</div></div>
+    <div class="col note">
+      <b>Steps to fire the forced failure</b><br>
+      1. Open the live link with <code>?fail=once</code> on the end.<br>
+      2. Type "Plan me a weekend in Kyoto" and press Send.<br>
+      3. The typing bubble shows, then the error bubble appears.<br>
+      4. Tap <b>Try again</b>. The three cards appear in order.
+    </div>
+  </div>
+
+  <div class="foot"><span>Trip-planner chat · Card spec</span><span>5 / 6</span></div>
+</section>
+
+<!-- ============ PAGE 6: MOCK RESPONSE ============ -->
+<section class="page">
+  <div class="eyebrow">Data</div>
+  <h2>Mock response</h2>
+  <p class="lead">Fake data that stands in for the assistant's real answer while the prototype is built. <code>cardType</code> tells the chat which component to draw. The values are blank on purpose, apart from the stay dates and nights, which are fixed for the Kyoto weekend (Fri 11 – Sun 13 Apr 2025).</p>
+
+  <div class="order">
+    <div style="background:var(--coral-soft)"><span class="eyebrow">Item 1</span><b>stay</b>11 fields → <code>StayCard</code></div>
+    <div style="background:var(--violet-soft)"><span class="eyebrow">Item 2</span><b>experience</b>8 fields → <code>ExperienceCard</code></div>
+    <div style="background:var(--amber-soft)"><span class="eyebrow">Item 3</span><b>food</b>6 fields + 5 per dish → <code>FoodCard</code></div>
+  </div>
+
+  <div class="row" style="margin-top:6mm; gap:6mm">
+    <div class="col">
+<pre>[
+  {
+    <span class="k">"cardType"</span>: <span class="s">"stay"</span>,
+    <span class="k">"details"</span>: {
+      <span class="k">"stayName"</span>: <span class="s">""</span>,
+      <span class="k">"location"</span>: <span class="s">""</span>,
+      <span class="k">"imageUrl"</span>: <span class="s">""</span>,
+      <span class="k">"popularityLabel"</span>: <span class="s">""</span>,
+      <span class="k">"nightlyPriceUsd"</span>: <span class="n">null</span>,
+      <span class="k">"nights"</span>: <span class="n">2</span>,
+      <span class="k">"checkIn"</span>: <span class="s">"2025-04-11"</span>,
+      <span class="k">"checkOut"</span>: <span class="s">"2025-04-13"</span>,
+      <span class="k">"description"</span>: <span class="s">""</span>,
+      <span class="k">"rating"</span>: <span class="n">null</span>,
+      <span class="k">"reviewCount"</span>: <span class="n">null</span>
+    }
+  },
+  {
+    <span class="k">"cardType"</span>: <span class="s">"experience"</span>,
+    <span class="k">"details"</span>: {
+      <span class="k">"experienceName"</span>: <span class="s">""</span>,
+      <span class="k">"description"</span>: <span class="s">""</span>,
+      <span class="k">"imageUrl"</span>: <span class="s">""</span>,
+      <span class="k">"durationHours"</span>: <span class="n">null</span>,
+      <span class="k">"placeName"</span>: <span class="s">""</span>,
+      <span class="k">"address"</span>: <span class="s">""</span>,
+      <span class="k">"minutesFromStay"</span>: <span class="n">null</span>,
+      <span class="k">"timeSlots"</span>: []
+    }
+  },</pre>
+    </div>
+    <div class="col">
+<pre>  {
+    <span class="k">"cardType"</span>: <span class="s">"food"</span>,
+    <span class="k">"details"</span>: {
+      <span class="k">"restaurantName"</span>: <span class="s">""</span>,
+      <span class="k">"rating"</span>: <span class="n">null</span>,
+      <span class="k">"reviewCount"</span>: <span class="n">null</span>,
+      <span class="k">"imageUrl"</span>: <span class="s">""</span>,
+      <span class="k">"filters"</span>: [],
+      <span class="k">"menuItems"</span>: [
+        {
+          <span class="k">"itemName"</span>: <span class="s">""</span>,
+          <span class="k">"imageUrl"</span>: <span class="s">""</span>,
+          <span class="k">"dietLabel"</span>: <span class="s">""</span>,
+          <span class="k">"priceUsd"</span>: <span class="n">null</span>,
+          <span class="k">"portion"</span>: <span class="s">""</span>
+        }
+      ]
+    }
+  }
+]</pre>
+      <h3>Check before hand-in</h3>
+      <table>
+        <tr><td style="width:7mm">✓</td><td>Exactly 3 items, in the order stay, experience, food</td></tr>
+        <tr><td>✓</td><td>Each item has a <code>cardType</code> and a <code>details</code> object</td></tr>
+        <tr><td>✓</td><td>Every field name matches the card's field table</td></tr>
+        <tr><td>✓</td><td>Every value is blank (<code>""</code>, <code>null</code> or <code>[]</code>) except the stay dates and nights</td></tr>
+        <tr><td>✓</td><td>The three cards differ in image, biggest text and signature element</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="foot"><span>Trip-planner chat · Card spec</span><span>6 / 6</span></div>
+</section>
+
+</body>
+</html>

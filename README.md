@@ -4,6 +4,16 @@ A working prototype of a chat that plans a whole weekend in one reply: **a place
 
 This is a portfolio project done for Zero (Lesson 1). It uses Airbnb's name, logo and colours for demonstration only. It is not affiliated with Airbnb and is not a commercial product.
 
+## What's in this repo
+
+| Folder / file | What it is |
+|---|---|
+| [`Meeting-Notes.md`](Meeting-Notes.md) | The problem, the expected outcome and the build process, as agreed at kickoff |
+| [`Part 1 - Sketching, Problem statement and solution/`](<Part 1 - Sketching, Problem statement and solution>) | Hand sketches, the card and error-state spec, and its PDF source (see [Process](#process)) |
+| [`Trip-Planner-Card-Spec.pdf`](Trip-Planner-Card-Spec.pdf) | A 6-page illustrated PDF of the Part 1 spec |
+| [`Part 2 - Prototype - All ideal Flow/`](<Part 2 - Prototype - All ideal Flow>) | The content pack, plus **the app** in [`trip-planner-chat/`](<Part 2 - Prototype - All ideal Flow/trip-planner-chat>) |
+| [`Decisions/`](Decisions) | The decision log: one file per task with what we chose, the alternatives and why |
+
 ---
 
 ## The problem
@@ -95,9 +105,10 @@ src/
 
 ## Run it locally
 
-Requires Node 20+.
+Requires Node 20+. The app lives in `Part 2 - Prototype - All ideal Flow/trip-planner-chat/`, and code paths in this README are relative to that folder.
 
 ```bash
+cd "Part 2 - Prototype - All ideal Flow/trip-planner-chat"
 npm install
 npm run dev
 ```
@@ -110,4 +121,29 @@ npm run build && npm start   # production build
 
 ## Deploy
 
-Import the repo in Vercel and keep the defaults (framework: Next.js). No environment variables are needed.
+Import the repo in Vercel and set **Root Directory** to `Part 2 - Prototype - All ideal Flow/trip-planner-chat`. Keep the other defaults (framework: Next.js). No environment variables are needed.
+
+## Process
+
+### Part 1: Sketching, problem statement and solution
+
+1. **Problem:** [Meeting-Notes.md](Meeting-Notes.md) sets out why guests drop off and what leaders want to see.
+2. **Hand sketches:** one per card plus the error flow, in [`sKETCHES/`](<Part 1 - Sketching, Problem statement and solution/sKETCHES>):
+
+   | Stay | Experience | Food | Error states |
+   |---|---|---|---|
+   | [sketch-stay.jpeg](<Part 1 - Sketching, Problem statement and solution/sKETCHES/sketch-stay.jpeg>) | [sketch-experience.jpeg](<Part 1 - Sketching, Problem statement and solution/sKETCHES/sketch-experience.jpeg>) | [sketch-food.jpeg](<Part 1 - Sketching, Problem statement and solution/sKETCHES/sketch-food.jpeg>) | [sketch-error.jpeg](<Part 1 - Sketching, Problem statement and solution/sKETCHES/sketch-error.jpeg>) |
+
+   The originals are phone photos taken sideways. Upright copies used in the PDF are in [`pdf-build/`](<Part 1 - Sketching, Problem statement and solution/pdf-build>).
+3. **Spec:** [Trip-Planner-Card-Spec.md](<Part 1 - Sketching, Problem statement and solution/Trip-Planner-Card-Spec.md>) holds a text-box sketch and field table for each card, the mock-response shape and the error states. It is also an illustrated [PDF](Trip-Planner-Card-Spec.pdf), built from [`pdf-build/spec.html`](<Part 1 - Sketching, Problem statement and solution/pdf-build/spec.html>). The team's starting brief is [Kyoto Weekend Card Spec](<Part 1 - Sketching, Problem statement and solution/Trip-Planner Chat – Kyoto Weekend Card Spec (Stay, Experience, Food).md>).
+
+### Part 2: Prototype, ideal flow
+
+- **Content:** [Kyoto Weekend Prototype Content Pack.xlsx](<Part 2 - Prototype - All ideal Flow/Kyoto Weekend Prototype Content Pack.xlsx>), one row per sheet (see [Where the content comes from](#where-the-content-comes-from)).
+- **App:** [`trip-planner-chat/`](<Part 2 - Prototype - All ideal Flow/trip-planner-chat>).
+
+### Decision log
+
+Every decision is recorded with its alternatives and the reasoning, one file per task, in [`Decisions/`](Decisions/README.md):
+- [Task 01: Card and error-state spec](Decisions/Task-01-Card-and-Error-Spec.md)
+- [Task 02: Prototype, ideal flow](Decisions/Task-02-Prototype-Ideal-Flow.md)
