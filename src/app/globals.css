@@ -1,26 +1,47 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --rausch: #ff385c;
+  --rausch-dark: #e00b41;
+  --rausch-tint: #fff1f3;
+  --ink: #222222;
+  --muted: #6a6a6a;
+  --hairline: #dddddd;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-rausch: var(--rausch);
+  --color-rausch-dark: var(--rausch-dark);
+  --color-rausch-tint: var(--rausch-tint);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-hairline: var(--hairline);
+  --font-sans: var(--font-nunito), "Airbnb Cereal VF", Circular, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #ececec;
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #ececec 0%, #f7f7f7 40%, #ececec 80%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
 }

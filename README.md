@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Airbnb Trip-planner Chat
 
-## Getting Started
+A working prototype of a chat that plans a whole weekend in one reply: **a place to stay, something to do and somewhere to eat**, all inside the Airbnb app.
 
-First, run the development server:
+This is a portfolio project done for Zero (Lesson 1). It uses Airbnb's name, logo and colours for demonstration only. It is not affiliated with Airbnb and is not a commercial product.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## The problem
+
+- Guests leave before they ever see a listing. Search filters make them build a trip piece by piece, on their own.
+- Nothing in the app plans a whole weekend in one place: stay, activity and food each live in a different tab.
+- Leaders want to judge the idea by **using** it, not by reading a deck. Eight test guests are booked with UX Research to try it.
+
+## The solution
+
+The guest types a request into a **Trip-planner** chat, for example:
+
+> find me a weekend trip in tokyo for 2 people under 600 dollars
+
+The assistant answers with three cards, a stay, an experience and a meal, plus a short trip summary that checks the plan against the budget. There's no login, it works on mobile and web, and the chat is never left blank.
+
+## The chat flow
+
+1. **Home → chat.** The chat opens as a sheet over a mock of the Airbnb mobile home screen. The navbar shows the Bélo on the left, and the **Trip-planner** name with a close (✕) button on the right. Closing returns to the home screen, and the red **Plan a trip** button reopens the chat with the thread intact.
+2. **Send.** The message box is pre-filled with the sample prompt. When you send, the input and send button **lock**.
+3. **Thinking.** A reply bubble shows the thinking animation: four dots **stretch → squash → move in a wave → gather and morph into the Airbnb logo**, then the loop repeats. It's built on the Web Animations API and falls back to a gentle pulse under `prefers-reduced-motion`.
+4. **Skeletons.** Grey placeholders shaped like each of the three cards hold the layout while the results "load".
+5. **Reply**, in this order:
+   - a one-line **summary** at the top;
+   - three cards stacked vertically: **Stay → Experience → Food**;
+   - a **trip summary**: dates, guests, a mini plan, the cost breakdown and a budget meter against $600.
+6. The input **unlocks** for the next message.
+
+Agent bubbles are a very light red with an Airbnb-red (`#FF385C`) border. Guest bubbles are grey.
+
+### About Tokyo vs Kyoto
+
+The sample prompt asks for **Tokyo**, but the prototype content pack covers a **Kyoto** weekend. The assistant handles this openly: it says Tokyo is over budget for that weekend and offers the Kyoto plan instead, about 2h15 away by bullet train. Ask for Kyoto and it just answers.
+
+## The three cards
+
+Each card is its own component, so the layouts stay clearly different.
+
+| Card | Component | Layout |
+|---|---|---|
+| **Stay** | `src/components/cards/StayCard.tsx` | Full-width banner with a *Guest favourite* emblem. The name is the biggest text. The price sits in a **red-bordered box** with nights and dates (`$168 /night · 2 nights · 11–13 Apr`), above a full-width **Add to trip** button. |
+| **Experience** | `src/components/cards/ExperienceCard.tsx` | Inset rounded image with a **duration chip**. Under it, a catchy one-liner and a **nested location card** (meeting point plus a "10 min away" pill). It ends with a split footer: **Know more** / **Pick time**. |
+| **Food** | `src/components/cards/FoodCard.tsx` | Small **square photo** beside the name, with no banner. **Breakfast / Lunch / Dinner** chips sit above a **sideways-scrolling menu row**, and each dish carries a **veg / non-veg dot**. |
+
+### Where the content comes from
+
+The mock reply in `src/lib/mockReply.ts` uses one row from each sheet of *Kyoto Weekend Prototype Content Pack.xlsx*:
+
+| Sheet | Row | Used |
+|---|---|---|
+| Stays | **S1** Restored machiya townhouse near Gion | $168/night, 2 nights, $366 total, 4.92 ★ (214), host Kenji, Fri 11 – Sun 13 Apr 2025 |
+| Experiences | **E1** Tea ceremony in a 100-year-old machiya | Sat 12 Apr 10:30, 2 hr, $58/guest ($116), 4.96 ★, host Mei, Gion-Shijo exit 6 |
+| Food | **F1** Menya Inoichi (ramen, Gion) | Dinner, $, ≈ $34 for 2, 8-min walk, "no reservations, arrive before 18:00" |
+
+**Total: $516 of the $600 budget, with $84 left.**
+
+The workbook has no photos (image rights aren't cleared), no popularity label, no walking distance for the experience, no menu and no restaurant rating. Those spots use illustrated placeholders and filler values, each marked with a `// filler` comment in `mockReply.ts`. The reply keeps the spec's shape: an ordered list of `{ cardType, details }`.
+
+## Error states
+
+The thread never ends on a blank screen. Every error comes with a button that brings the three cards back.
+
+| State | How to trigger it | What you see |
+|---|---|---|
+| **A: request failed** | Open the page with **`?fail=once`** (e.g. `http://localhost:3000/?fail=once`) and send any trip request | After the thinking animation, an error bubble appears: *"Sorry, I couldn't put your Kyoto weekend together just now…"* with **Try again**. Tapping it reruns the request, and the cards appear. Only the first request fails. |
+| **B: can't be planned** | Ask for two places at once, e.g. `plan japan and korea in 2 days` | A suggestion bubble: *"I can only plan one place at a time. Want me to build a weekend in Kyoto?"* with **Go with Kyoto**, which sends the Kyoto request. |
+
+## Stack
+
+- **Next.js 16** (App Router) · **React 19** · **TypeScript**
+- **Tailwind CSS v4**, with Airbnb tokens in `src/app/globals.css` (`rausch`, `rausch-tint`, `ink`, `muted`, `hairline`)
+- **Nunito Sans** (`next/font`) as a stand-in for Airbnb Cereal
+- No backend: the reply is a typed mock with simulated delays (`THINKING_MS`, `LOADING_MS` in `TripPlannerChat.tsx`)
+- Built to deploy on **Vercel**
+
+```
+src/
+  app/            layout, page, global tokens
+  components/
+    PhoneApp.tsx          phone frame (full screen on mobile)
+    HomeMock.tsx          static Airbnb home under the chat
+    TripPlannerChat.tsx   sheet, thread, composer, flow + error states
+    ThinkingDots.tsx      dots → Bélo animation
+    CardSkeletons.tsx     card-shaped loading placeholders
+    TripSummary.tsx       dates, guests, cost vs budget
+    cards/                StayCard, ExperienceCard, FoodCard
+  lib/mockReply.ts        typed mock reply from the content pack
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Run it locally
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Requires Node 20+.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev
+```
 
-## Learn More
+Open <http://localhost:3000>. On a desktop browser the app shows inside a phone frame. On a phone, or below 640px, it fills the screen.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build && npm start   # production build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Import the repo in Vercel and keep the defaults (framework: Next.js). No environment variables are needed.
