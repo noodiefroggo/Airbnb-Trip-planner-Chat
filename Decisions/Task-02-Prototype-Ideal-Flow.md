@@ -201,12 +201,41 @@ Build a clickable prototype of the *ideal* chat flow that leaders and the 8 UX-r
 - **Why:** a folder link keeps one repo as the single source of truth while still landing the reviewer on the chat. CLI deploy was quickest. `vercel.json` pins `framework: nextjs` because the project was first created with no framework preset, and that first build failed with "Output Directory public is empty".
 - **Impact:** the reviewer gets a live link plus a static screenshot of the exact stage. The project isn't Git-connected yet, so pushes don't auto-deploy.
 
+### D15. Three scenarios from the workbook, picked by the search
+- **Chose:**
+  - Rows 1–3 of each sheet become three complete trips:
+    - **Classic Gion:** S1+E1+F1, $516.
+    - **Foodie weekend:** S2+E2+F2, $546.
+    - **Budget + nature:** S3+E3+F3, $355, or $279 bookable.
+  - Row 4 isn't used for a scenario. S4 ($612) is over budget on its own, E4 has no host, and F4 ($180) would push any plan over.
+  - `src/lib/planner.ts` reads the request in this order: budget (first dollar amount, default $600), then theme keywords, then the first plan that fits.
+  - If the requested theme is over budget, the planner switches to a plan that fits and says why. The Tokyo → Kyoto note is kept.
+  - The card components are unchanged in layout. Each scenario brings its own copy and illustrations: 3 stays, 3 experiences, 3 food pictures, and dish icons by type.
+- **Alternatives:**
+  - one card set with randomised rows;
+  - letting the user pick a row per card;
+  - always returning scenario 1 (the previous build).
+- **Why:** the user pointed out that the sheet holds three scenarios and three card results, and the prototype should show all of them, driven by what's typed. Keeping one layout per card type while changing the content proves the components really are data-driven. Keyword and budget routing is enough for research sessions and is predictable for testers.
+- **Impact:**
+  - Chips (Classic Gion / Foodie weekend / Budget + nature) sit above the message box, so testers can reach each scenario in one tap.
+  - The README has one screenshot per scenario.
+  - The trip summary now takes the user's budget instead of a fixed $600.
+
+### D16. Sold-out experience (E3) stays visible, out of the total
+- **Chose:** E3 shows a **Sold out** badge, a greyed picture, and **Join waitlist** in place of Pick time. Its row in the summary is struck through and marked "waitlist", and it's left out of the total ($279, not $355). The intro line says it's sold out.
+- **Alternatives:**
+  - swap in E4 (pottery), which has open spots but no host listed;
+  - hide the experience card.
+- **Why:** the content pack marks E3 as sold out. Showing it honestly is a realistic edge case for research, and it keeps the reply at three cards and never blank, as the meeting notes require. E4 has missing data, so it's the weaker swap.
+- **Impact:** the summary shows a strike-through row; the budget logic counts only bookable items.
+
 ## Feedback received and how it changed things
 - **Review:** "Ship after must-fixes" → the three must-fixes in D13 were applied.
 - **User:** add all earlier work to the same repo → D2 (whole folder as the repo, duplicate removed, sketches renamed).
 - **User:** log every decision → this file.
 - **PM, via the user:** "Send me the link to the trip-planner chat in the Kyoto three-card stage, with the README and the thread screenshot committed" → D14.
 - **User:** publish as a new Vercel project → D14.
+- **PM:** the page showed "a chat that answers with a Kyoto stay, not the three-card thread". **User:** the sheet has 3 scenarios with 3 card results each, so build the other 2 and drive them from the search → D15, D16.
 
 ## Open questions / follow-ups
 - ~~Deploy to Vercel~~ Done (D14). Connecting the Vercel project to the GitHub repo would turn on auto-deploy, which isn't set up yet.

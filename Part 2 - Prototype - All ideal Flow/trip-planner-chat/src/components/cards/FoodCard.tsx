@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DishArt, RamenArt } from "../Illustrations";
+import { DishArt, FoodArtFor } from "../Illustrations";
 import type { FoodDetails } from "@/lib/mockReply";
 
 /** Food: square photo beside the name, meal chips, sideways dish row with diet dots. */
@@ -14,7 +14,7 @@ export function FoodCard({ details }: { details: FoodDetails }) {
     <article data-card="food" className="rounded-2xl border-l-4 border-[#E07A1F] bg-white p-4 shadow-[0_2px_10px_rgba(0,0,0,0.06)] ring-1 ring-black/5">
       <div className="flex gap-3">
         <div className="size-[76px] shrink-0 overflow-hidden rounded-xl">
-          <RamenArt className="size-full" />
+          <FoodArtFor art={d.art} className="size-full" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-[12px] font-semibold uppercase tracking-wide text-[#B65A0E]">
@@ -49,7 +49,7 @@ export function FoodCard({ details }: { details: FoodDetails }) {
           {d.menuItems.map((m, i) => (
             <li key={m.itemName} className="w-[96px] shrink-0 snap-start">
               <div className="relative size-[96px] overflow-hidden rounded-xl">
-                <DishArt index={i} className="size-full" />
+                <DishArt dish={m.dish} index={i} className="size-full" />
                 <span
                   title={m.dietLabel === "veg" ? "Vegetarian" : "Non-vegetarian"}
                   className={`absolute right-1.5 top-1.5 grid size-4 place-items-center rounded-[3px] border-2 bg-white ${
@@ -69,7 +69,9 @@ export function FoodCard({ details }: { details: FoodDetails }) {
         </ul>
       ) : (
         <p className="mt-3 rounded-xl bg-[#F7F7F7] p-3 text-[13px] text-muted">
-          {d.restaurantName} only serves {d.meal.toLowerCase()}. Switch back to see the menu.
+          {d.meal === "Snack stop"
+            ? `${d.restaurantName} is a grab-and-go stop, best between meals. Switch back to see what's on the grill.`
+            : `${d.restaurantName} only serves ${d.meal.toLowerCase()}. Switch back to see the menu.`}
         </p>
       )}
 

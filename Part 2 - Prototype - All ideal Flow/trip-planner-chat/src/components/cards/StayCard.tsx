@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MachiyaArt } from "../Illustrations";
+import { StayArtFor } from "../Illustrations";
 import { formatDay, type StayDetails } from "@/lib/mockReply";
 
 /** Stay: full-width banner + emblem, boxed price, full-width Add button. */
@@ -14,7 +14,7 @@ export function StayCard({ details }: { details: StayDetails }) {
   return (
     <article data-card="stay" className="overflow-hidden rounded-2xl bg-white shadow-[0_6px_20px_rgba(0,0,0,0.08)] ring-1 ring-black/5">
       <div className="relative aspect-[16/9] w-full">
-        <MachiyaArt className="absolute inset-0 size-full" />
+        <StayArtFor art={d.art} className="absolute inset-0 size-full" />
         <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[12px] font-semibold text-ink shadow-sm">
           <svg viewBox="0 0 16 16" className="size-3.5 text-rausch" aria-hidden>
             <path fill="currentColor" d="M8 1.5l1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3l.9-4.3-3.3-3 4.4-.5z" />

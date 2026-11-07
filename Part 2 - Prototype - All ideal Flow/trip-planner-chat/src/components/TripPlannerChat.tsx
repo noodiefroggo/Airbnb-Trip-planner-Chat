@@ -8,14 +8,15 @@ import { TripSummary } from "./TripSummary";
 import { StayCard } from "./cards/StayCard";
 import { ExperienceCard } from "./cards/ExperienceCard";
 import { FoodCard } from "./cards/FoodCard";
-import { BUDGET_USD, SUGGESTED_PROMPT, mockReply, tripTotal, type ReplyItem } from "@/lib/mockReply";
+import { SCENARIOS, SUGGESTED_PROMPT, type Scenario } from "@/lib/mockReply";
+import { planTrip } from "@/lib/planner";
 
 type Msg =
   | { id: number; role: "user"; text: string }
   | { id: number; role: "agent"; kind: "text"; text: string }
   | { id: number; role: "agent"; kind: "thinking" }
   | { id: number; role: "agent"; kind: "loading" }
-  | { id: number; role: "agent"; kind: "reply"; items: ReplyItem[]; intro: string }
+  | { id: number; role: "agent"; kind: "reply"; scenario: Scenario; budget: number; intro: string }
   | { id: number; role: "agent"; kind: "error"; retryPrompt: string }
   | { id: number; role: "agent"; kind: "suggestion"; text: string; label: string; prompt: string };
 
@@ -30,14 +31,6 @@ function countMatches(text: string, words: string[]) {
   return words.filter((w) => text.includes(w)).length;
 }
 
-function introFor(prompt: string, items: ReplyItem[]) {
-  const total = tripTotal(items);
-  const p = prompt.toLowerCase();
-  if (p.includes("tokyo") && !p.includes("kyoto")) {
-    return `Tokyo is booked past $${BUDGET_USD} for 2 that weekend, so I planned Kyoto instead, 2h15 away by bullet train. Stay, tea and ramen come to $${total}.`;
-  }
-  return `Here's a Kyoto weekend for 2. Stay, tea and ramen come to $${total}, under your $${BUDGET_USD}.`;
-}
 
 function AgentAvatar() {
   return (
@@ -136,7 +129,8 @@ export function TripPlannerChat({ open, onClose }: { open: boolean; onClose: () 
                 failOnce.current = false;
                 replace({ id: agentId, role: "agent", kind: "error", retryPrompt: text });
               } else {
-                replace({ id: agentId, role: "agent", kind: "reply", items: mockReply, intro: introFor(text, mockReply) });
+                const plan = planTrip(text);
+                replace({ id: agentId, role: "agent", kind: "reply", scenario: plan.scenario, budget: plan.budget, intro: plan.intro });
               }
               setLocked(false);
             }, LOADING_MS),
@@ -147,7 +141,6 @@ export function TripPlannerChat({ open, onClose }: { open: boolean; onClose: () 
     [locked],
   );
 
-  const onlyGreeting = messages.length === 1;
 
   return (
     <div
@@ -218,15 +211,15 @@ export function TripPlannerChat({ open, onClose }: { open: boolean; onClose: () 
                     {m.kind === "reply" && (
                       <>
                         <AgentBubble>{m.intro}</AgentBubble>
-                        <div className="flex flex-col gap-3" data-testid="cards">
-                          {m.items.map((item) => {
+                        <div className="flex flex-col gap-3" data-testid="cards" data-scenario={m.scenario.id}>
+                          {m.scenario.items.map((item) => {
                             if (item.cardType === "stay") return <StayCard key="stay" details={item.details} />;
                             if (item.cardType === "experience") return <ExperienceCard key="exp" details={item.details} />;
                             return <FoodCard key="food" details={item.details} />;
                           })}
                         </div>
                         <AgentBubble>
-                          <TripSummary items={m.items} />
+                          <TripSummary scenario={m.scenario} budget={m.budget} />
                         </AgentBubble>
                       </>
                     )}
@@ -272,14 +265,20 @@ export function TripPlannerChat({ open, onClose }: { open: boolean; onClose: () 
 
         {/* composer */}
         <div className="shrink-0 border-t border-hairline bg-white px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-2.5">
-          {onlyGreeting && !locked && draft !== SUGGESTED_PROMPT && (
-            <button
-              type="button"
-              onClick={() => send(SUGGESTED_PROMPT)}
-              className="mb-2 max-w-full truncate rounded-full border border-hairline bg-white px-3 py-1.5 text-left text-[12px] text-ink hover:border-ink"
-            >
-              Try: “{SUGGESTED_PROMPT}”
-            </button>
+          {!locked && (
+            <div className="-mx-3 mb-2 flex gap-1.5 overflow-x-auto px-3 [scrollbar-width:none]" role="group" aria-label="Try a trip">
+              {SCENARIOS.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => send(s.samplePrompt)}
+                  title={s.samplePrompt}
+                  className="shrink-0 rounded-full border border-hairline bg-white px-3 py-1.5 text-[12px] font-medium text-ink hover:border-ink"
+                >
+                  {s.name}
+                </button>
+              ))}
+            </div>
           )}
           <form
             onSubmit={(e) => {

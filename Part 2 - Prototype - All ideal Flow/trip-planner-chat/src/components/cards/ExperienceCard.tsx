@@ -1,19 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { TeaArt } from "../Illustrations";
-import type { ExperienceDetails } from "@/lib/mockReply";
+import { ExperienceArtFor } from "../Illustrations";
+import { formatDay, type ExperienceDetails } from "@/lib/mockReply";
 
 /** Experience: inset image + duration chip, nested location card, split footer. */
 export function ExperienceCard({ details }: { details: ExperienceDetails }) {
   const d = details;
+  const soldOut = d.availability === "Sold out";
   const [panel, setPanel] = useState<"none" | "more" | "time">("none");
   const [slot, setSlot] = useState<string | null>(null);
+  const [waitlisted, setWaitlisted] = useState(false);
 
   return (
-    <article data-card="experience" className="rounded-[22px] border border-hairline bg-[#FAFAF7] p-3">
+    <article data-card="experience" data-availability={d.availability} className="rounded-[22px] border border-hairline bg-[#FAFAF7] p-3">
       <div className="relative aspect-[16/10] overflow-hidden rounded-2xl">
-        <TeaArt className="absolute inset-0 size-full" />
+        <ExperienceArtFor art={d.art} className={`absolute inset-0 size-full ${soldOut ? "grayscale-[60%]" : ""}`} />
+        {soldOut && (
+          <span className="absolute right-3 top-3 rounded-full bg-[#C13515] px-2.5 py-1 text-[12px] font-semibold text-white">
+            Sold out
+          </span>
+        )}
         <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[12px] font-semibold uppercase tracking-wide text-[#3B5A2A]">
           {d.category}
         </span>
@@ -30,7 +37,8 @@ export function ExperienceCard({ details }: { details: ExperienceDetails }) {
         <h3 className="text-[19px] font-bold leading-snug tracking-[-0.01em] text-ink">{d.experienceName}</h3>
         <p className="mt-1 text-[13px] italic text-ink/75">{d.description}</p>
         <p className="mt-1.5 text-[12px] text-muted">
-          ★ {d.rating.toFixed(2)} · ${d.pricePerGuestUsd} / guest · <span className="font-medium text-[#2E7D32]">{d.availability}</span>
+          ★ {d.rating.toFixed(2)} · ${d.pricePerGuestUsd} / guest ·{" "}
+          <span className={`font-medium ${soldOut ? "text-[#C13515]" : "text-[#2E7D32]"}`}>{d.availability}</span>
         </p>
       </div>
 
@@ -54,11 +62,11 @@ export function ExperienceCard({ details }: { details: ExperienceDetails }) {
 
       {panel === "more" && (
         <p className="mt-3 rounded-xl bg-white p-3 text-[13px] text-ink/80">
-          Hosted by {d.hostName}. Sat 12 Apr, starts {d.timeSlots[0].split("· ")[1]}. ${d.totalUsd} for 2 guests. Kneel on tatami,
-          learn the bow, whisk and sip. Tea sweets included.
+          Hosted by {d.hostName}. {formatDay(d.date)}, starts {d.startTime}. ${d.totalUsd} for 2 guests. {d.moreInfo}
+          {soldOut && " This date is full; the waitlist pings you if 2 spots open."}
         </p>
       )}
-      {panel === "time" && (
+      {panel === "time" && !soldOut && (
         <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Time slots">
           {d.timeSlots.map((t) => (
             <button
@@ -85,14 +93,27 @@ export function ExperienceCard({ details }: { details: ExperienceDetails }) {
         >
           Know more
         </button>
-        <button
-          type="button"
-          onClick={() => setPanel(panel === "time" ? "none" : "time")}
-          aria-expanded={panel === "time"}
-          className="h-11 rounded-xl bg-ink text-[14px] font-semibold text-white"
-        >
-          {slot ? "10:30 picked ✓" : "Pick time"}
-        </button>
+        {soldOut ? (
+          <button
+            type="button"
+            onClick={() => setWaitlisted((v) => !v)}
+            aria-pressed={waitlisted}
+            className={`h-11 rounded-xl text-[14px] font-semibold ${
+              waitlisted ? "border border-ink bg-white text-ink" : "bg-ink text-white"
+            }`}
+          >
+            {waitlisted ? "On the waitlist ✓" : "Join waitlist"}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setPanel(panel === "time" ? "none" : "time")}
+            aria-expanded={panel === "time"}
+            className="h-11 rounded-xl bg-ink text-[14px] font-semibold text-white"
+          >
+            {slot ? `${d.startTime} picked ✓` : "Pick time"}
+          </button>
+        )}
       </div>
     </article>
   );

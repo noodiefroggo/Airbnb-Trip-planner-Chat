@@ -62,15 +62,15 @@ Each card is its own component, so the layouts stay clearly different.
 
 ### Where the content comes from
 
-The mock reply in `src/lib/mockReply.ts` uses one row from each sheet of *Kyoto Weekend Prototype Content Pack.xlsx*:
+*Kyoto Weekend Prototype Content Pack.xlsx* lines up into **three scenarios**: rows 1–3 of each sheet. The search in `src/lib/planner.ts` picks one from the request's budget and theme. See the [app README](<Part 2 - Prototype - All ideal Flow/trip-planner-chat/README.md>) for the routing rules and a screenshot of each thread.
 
-| Sheet | Row | Used |
-|---|---|---|
-| Stays | **S1** Restored machiya townhouse near Gion | $168/night, 2 nights, $366 total, 4.92 ★ (214), host Kenji, Fri 11 – Sun 13 Apr 2025 |
-| Experiences | **E1** Tea ceremony in a 100-year-old machiya | Sat 12 Apr 10:30, 2 hr, $58/guest ($116), 4.96 ★, host Mei, Gion-Shijo exit 6 |
-| Food | **F1** Menya Inoichi (ramen, Gion) | Dinner, $, ≈ $34 for 2, 8-min walk, "no reservations, arrive before 18:00" |
+| Scenario | Stay | Experience | Food | Total for 2 |
+|---|---|---|---|---|
+| 1 · Classic Gion | **S1** Machiya townhouse, Gion · $366 | **E1** Tea ceremony · $116 | **F1** Menya Inoichi ramen · $34 | $516 / $600 |
+| 2 · Foodie weekend | **S2** Tatami room by the Kamo River · $312 | **E2** Nishiki Market tasting walk · $170 | **F2** Sagano Yudofu-tei · $64 | $546 / $600 |
+| 3 · Budget + nature | **S3** Flat off Sanjo Street · $249 | **E3** Dawn Fushimi Inari walk · $76, *sold out* | **F3** Nishiki tamago & skewer stall · $30 | $279 / $400 |
 
-**Total: $516 of the $600 budget, with $84 left.**
+Row 4 of each sheet (S4 $612 ryokan, E4 pottery with no host, F4 $180 kaiseki) is the over-budget or incomplete set and isn't used for a scenario.
 
 The workbook has no photos (image rights aren't cleared), no popularity label, no walking distance for the experience, no menu and no restaurant rating. Those spots use illustrated placeholders and filler values, each marked with a `// filler` comment in `mockReply.ts`. The reply keeps the spec's shape: an ordered list of `{ cardType, details }`.
 
@@ -141,7 +141,7 @@ The app is deployed as the Vercel project **airbnb-trip-planner** at https://air
 
 ### Part 2: Prototype, ideal flow
 
-- **Content:** [Kyoto Weekend Prototype Content Pack.xlsx](<Part 2 - Prototype - All ideal Flow/Kyoto Weekend Prototype Content Pack.xlsx>), one row per sheet (see [Where the content comes from](#where-the-content-comes-from)).
+- **Content:** [Kyoto Weekend Prototype Content Pack.xlsx](<Part 2 - Prototype - All ideal Flow/Kyoto Weekend Prototype Content Pack.xlsx>), rows 1–3 of each sheet as three scenarios (see [Where the content comes from](#where-the-content-comes-from)).
 - **App:** [`trip-planner-chat/`](<Part 2 - Prototype - All ideal Flow/trip-planner-chat>).
 
 ### Decision log
