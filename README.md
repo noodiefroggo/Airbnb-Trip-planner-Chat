@@ -2,6 +2,8 @@
 
 A working prototype of a chat that plans a whole weekend in one reply: **a place to stay, something to do and somewhere to eat**, all inside the Airbnb app.
 
+**Live prototype:** https://airbnb-trip-planner-dusky.vercel.app. The chat app and its README are in [`trip-planner-chat/`](<Part 2 - Prototype - All ideal Flow/trip-planner-chat>).
+
 This is a portfolio project done for Zero (Lesson 1). It uses Airbnb's name, logo and colours for demonstration only. It is not affiliated with Airbnb and is not a commercial product.
 
 ## What's in this repo
@@ -121,7 +123,7 @@ npm run build && npm start   # production build
 
 ## Deploy
 
-Import the repo in Vercel and set **Root Directory** to `Part 2 - Prototype - All ideal Flow/trip-planner-chat`. Keep the other defaults (framework: Next.js). No environment variables are needed.
+The app is deployed as the Vercel project **airbnb-trip-planner** at https://airbnb-trip-planner-dusky.vercel.app, from the `trip-planner-chat/` folder with the CLI (`vercel deploy --prod`). `vercel.json` pins the framework to Next.js. No environment variables are needed. To deploy from Git instead, import the repo and set **Root Directory** to `Part 2 - Prototype - All ideal Flow/trip-planner-chat`.
 
 ## Process
 

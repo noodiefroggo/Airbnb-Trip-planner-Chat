@@ -189,13 +189,27 @@ Build a clickable prototype of the *ideal* chat flow that leaders and the 8 UX-r
   - **Narrower `aria-live` region and a composer fade:** deferred.
 - **Why:** low-risk, in-scope fixes were made now. Anything that would change a spec decision was left.
 
+### D14. Hand-off: chat-stage link, thread screenshot, and its own Vercel project
+- **Chose:**
+  - The PM asked for the trip-planner chat at the Kyoto three-card stage, not the whole project repo. The hand-off link points straight at the `trip-planner-chat/` folder, pinned to the commit.
+  - That folder's README now stands on its own: the live link, the thread screenshot, the flow, the three card layouts, the content source and the error states.
+  - The screenshot is committed at `docs/thread-kyoto-three-cards.png`. It shows the full reply at 390px mobile width, captured with headless Chrome after a real send.
+  - The app is deployed as a new Vercel project, `airbnb-trip-planner`, under the Arpan Debnath team. The public URL is https://airbnb-trip-planner-dusky.vercel.app.
+- **Alternatives:**
+  - a separate repo holding only the chat;
+  - a Vercel project created by connecting the Git repo.
+- **Why:** a folder link keeps one repo as the single source of truth while still landing the reviewer on the chat. CLI deploy was quickest. `vercel.json` pins `framework: nextjs` because the project was first created with no framework preset, and that first build failed with "Output Directory public is empty".
+- **Impact:** the reviewer gets a live link plus a static screenshot of the exact stage. The project isn't Git-connected yet, so pushes don't auto-deploy.
+
 ## Feedback received and how it changed things
 - **Review:** "Ship after must-fixes" → the three must-fixes in D13 were applied.
 - **User:** add all earlier work to the same repo → D2 (whole folder as the repo, duplicate removed, sketches renamed).
 - **User:** log every decision → this file.
+- **PM, via the user:** "Send me the link to the trip-planner chat in the Kyoto three-card stage, with the README and the thread screenshot committed" → D14.
+- **User:** publish as a new Vercel project → D14.
 
 ## Open questions / follow-ups
-- Deploy to Vercel with Root Directory set to `Part 2 - Prototype - All ideal Flow/trip-planner-chat`. Not done yet.
+- ~~Deploy to Vercel~~ Done (D14). Connecting the Vercel project to the GitHub repo would turn on auto-deploy, which isn't set up yet.
 - Should the sample prompt become Kyoto, or Tokyo content be added? (D5)
 - The Stay detail screen (spec §1) and a full Experience page aren't built. Know more and Pick time open inline instead.
 - The dates are April 2025, which is in the past (Task 01 D5).
