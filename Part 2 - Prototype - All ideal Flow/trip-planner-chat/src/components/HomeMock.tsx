@@ -9,7 +9,7 @@ const LISTINGS = [
 
 export function HomeMock({ onOpenChat }: { onOpenChat: () => void }) {
   return (
-    <div className="flex h-full flex-col bg-white" aria-label="Airbnb home (mock)">
+    <div className="flex h-full flex-col bg-white lg:hidden" aria-label="Airbnb home (mock)">
       <div className="px-5 pt-12">
         <button
           type="button"
@@ -60,6 +60,7 @@ export function HomeMock({ onOpenChat }: { onOpenChat: () => void }) {
       <button
         type="button"
         onClick={onOpenChat}
+        data-reopen
         className="absolute bottom-[84px] right-4 z-10 inline-flex items-center gap-2 rounded-full bg-rausch-dark py-3 pl-3.5 pr-4 text-[14px] font-semibold text-white shadow-[0_8px_24px_rgba(255,56,92,0.45)] hover:bg-[#C1083A]"
       >
         <svg viewBox="0 0 20 20" className="size-5" aria-hidden>

@@ -14,6 +14,20 @@ Requires Node 20+. Run `npm install && npm run dev`, then open http://localhost:
 
 To see the error state, add `?fail=once` to the URL. See [Broken state](#broken-state).
 
+## Desktop version
+
+On a screen 1024px wide or more, the chat opens as a 520px side panel over a mock of the Airbnb website home page, instead of a sheet over the mobile app. The page behind dims, and the thread, cards, thinking dots, skeletons and error state are the same as on the phone.
+
+- **Open:** the panel is open when the page loads. **Close** (✕, or the Esc key) slides it away, and the red **Plan a trip** button at the bottom right of the page brings it back with the thread intact.
+- **Phones and tablets:** below 1024px the layout is unchanged. Phones get the full-screen sheet over the mobile home screen, and tablets get the phone frame.
+
+<img src="docs/desktop-2-reply.png" alt="Desktop at 1440px. The Airbnb website home page is dimmed behind a 520px Trip-planner panel that shows the reply: the intro line and the first card, the machiya stay." width="760">
+
+<p>
+<img src="docs/desktop-1-open.png" alt="Desktop: the chat panel open over the website, with the greeting and the sample request in the message box." width="370">
+<img src="docs/desktop-3-closed.png" alt="Desktop: the chat closed, showing the website with the Plan a trip button at the bottom right." width="370">
+</p>
+
 ## Card fields that use a filler line
 
 The content comes from the *Kyoto Weekend Prototype Content Pack* workbook. Where the workbook has no value for a field, the card shows a filler line, marked `// filler` in `src/lib/mockReply.ts`.
@@ -85,7 +99,7 @@ The rules below come from *Moderated Session Prototype Requirements: Trip-Planne
 
 **Session setups**
 - [x] **Phone:** iPhone 14, Safari, about 390px wide, private window, not logged in to Airbnb or Vercel
-- [x] **Laptop:** 13-inch MacBook Air, Chrome, about 1440px wide, incognito window, not logged in to Airbnb or Vercel
+- [x] **Laptop:** 13-inch MacBook Air, Chrome, about 1440px wide, incognito window, not logged in to Airbnb or Vercel. The chat opens as a side panel over the website (see [Desktop version](#desktop-version)).
 
 > The phone setup was run in a private Chrome window at 390px with an iPhone Safari user agent, not on a physical iPhone. A quick tap-through on a real iPhone is still worth doing before the first guest.
 
@@ -111,7 +125,7 @@ Each setup ran the happy path (the pre-filled request) and the error path (`?fai
 | Setup | Cards | Error bubble | Cards after retry |
 |---|---|---|---|
 | **Phone** (390px) | <img src="docs/moderated-checks/phone-1-cards.png" alt="Phone: the happy path, with the stay, experience and food cards and the trip summary." width="200"> | <img src="docs/moderated-checks/phone-2-error.png" alt="Phone: the error bubble with a Try again button." width="200"> | <img src="docs/moderated-checks/phone-3-after-retry.png" alt="Phone: the three cards back after Try again." width="200"> |
-| **Laptop** (1440px) | <img src="docs/moderated-checks/laptop-1-cards.png" alt="Laptop: the happy path inside the phone frame." width="200"> | <img src="docs/moderated-checks/laptop-2-error.png" alt="Laptop: the error bubble with a Try again button." width="200"> | <img src="docs/moderated-checks/laptop-3-after-retry.png" alt="Laptop: the three cards back after Try again." width="200"> |
+| **Laptop** (1440px) | <img src="docs/moderated-checks/laptop-1-cards.png" alt="Laptop: the happy path in the chat side panel, with the stay, experience and food cards." width="200"> | <img src="docs/moderated-checks/laptop-2-error.png" alt="Laptop: the error bubble with a Try again button." width="200"> | <img src="docs/moderated-checks/laptop-3-after-retry.png" alt="Laptop: the three cards back after Try again." width="200"> |
 
 ## Message for the team
 

@@ -262,6 +262,15 @@ Build a clickable prototype of the *ideal* chat flow that leaders and the 8 UX-r
 - **Why:** the requirements say a guest must never believe a real booking is being made, so the wording has to be visible in every state, including failure. They also say nothing may be cut off or need sideways scrolling at phone width, and the old menu cut off its third dish. A wrapping grid shows every dish and keeps the food card's look (square photo, meal chips, veg / non-veg dots).
 - **Impact:** this overrides the Part 1 sketch's "sideways-scrolling menu row" for this stage. The checklist in the README is ticked from a run on both setups (phone at 390px, laptop at 1440px) with 0 blank samples. The phone run used Chrome with an iPhone Safari user agent, not a real iPhone.
 
+### D21. Desktop version: the chat as a side panel over the website
+- **Chose:** at 1024px and wider, the chat is a 520px panel anchored to the right of a mock Airbnb website home page (top bar, search pill, filter strip, two listing rows), with a 30% scrim behind it. It is open on load, slides away on close, and a red **Plan a trip** button at the bottom right brings it back with the thread intact. Below 1024px nothing changes. It is the same chat component with `lg:` classes, so there is one input and one thread in the page.
+- **Alternatives:**
+  - a centred modal;
+  - a small floating widget in the corner;
+  - keep showing the phone frame on desktop.
+- **Why:** the brief is how the chat would look over the website. A side panel keeps the website visible and gives the cards about 400px of width, close to the phone layout the cards were designed for. A modal hides the site, and a small widget would force the three cards into a cramped box. The phone frame on a laptop doesn't answer the question.
+- **Impact:** on laptops the guest now sees the website behind the chat, so the laptop screenshots in the moderated-session checklist were retaken. The mock website is static and is not a copy of airbnb.com.
+
 ## Feedback received and how it changed things
 - **Review:** "Ship after must-fixes" → the three must-fixes in D13 were applied.
 - **User:** add all earlier work to the same repo → D2 (whole folder as the repo, duplicate removed, sketches renamed).

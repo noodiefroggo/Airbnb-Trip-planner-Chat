@@ -161,15 +161,15 @@ export function TripPlannerChat({ open, onClose }: { open: boolean; onClose: () 
       aria-hidden={!open}
     >
       <div
-        className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"}`}
+        className={`absolute inset-0 bg-black/40 transition-opacity duration-300 lg:bg-black/30 ${open ? "opacity-100" : "opacity-0"}`}
         onClick={onClose}
       />
       <section
         role="dialog"
         aria-modal="true"
         aria-label="Trip-planner chat"
-        className={`absolute inset-x-0 bottom-0 top-8 flex flex-col overflow-hidden rounded-t-[28px] bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.25)] transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${
-          open ? "translate-y-0" : "translate-y-full"
+        className={`absolute inset-x-0 bottom-0 top-8 flex flex-col overflow-hidden rounded-t-[28px] bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.25)] transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:inset-x-auto lg:bottom-6 lg:right-6 lg:top-6 lg:w-[520px] lg:max-w-[calc(100%-48px)] lg:rounded-[24px] lg:shadow-[0_24px_64px_rgba(0,0,0,0.3)] ${
+          open ? "translate-y-0 lg:translate-x-0" : "translate-y-full lg:translate-y-0 lg:translate-x-[calc(100%+24px)]"
         }`}
       >
         {/* navbar */}
@@ -193,7 +193,7 @@ export function TripPlannerChat({ open, onClose }: { open: boolean; onClose: () 
         </header>
 
         {/* thread */}
-        <div ref={threadRef} className="relative flex-1 overflow-y-auto bg-[#FCFCFC] px-4 py-4" aria-live="polite" data-testid="thread">
+        <div ref={threadRef} className="relative flex-1 overflow-y-auto bg-[#FCFCFC] px-4 py-4 lg:px-6" aria-live="polite" data-testid="thread">
           <div className="flex flex-col gap-3">
             {messages.map((m) => {
               if (m.role === "user") {
@@ -277,9 +277,9 @@ export function TripPlannerChat({ open, onClose }: { open: boolean; onClose: () 
         </div>
 
         {/* composer */}
-        <div className="shrink-0 border-t border-hairline bg-white px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-2.5">
+        <div className="shrink-0 border-t border-hairline bg-white px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-2.5 lg:px-5">
           {!locked && (
-            <div className="-mx-3 mb-2 flex gap-1.5 overflow-x-auto px-3 [scrollbar-width:none]" role="group" aria-label="Try a trip">
+            <div className="-mx-3 mb-2 flex gap-1.5 overflow-x-auto px-3 [scrollbar-width:none] lg:-mx-5 lg:px-5" role="group" aria-label="Try a trip">
               {SCENARIOS.map((s) => (
                 <button
                   key={s.id}
