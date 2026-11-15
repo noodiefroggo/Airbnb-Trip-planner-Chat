@@ -16,6 +16,11 @@ Requires Node 20+. Run `npm install && npm run dev`, then open http://localhost:
 
 <img src="docs/error-flow.png" alt="The ?fail=once flow in three steps. 1: the reply fails and an error bubble, Hmm, that one slipped past me, shows with a Try again button. 2: tapping Try again sends the request again and the thinking dots show. 3: the plan comes back, starting with the stay card." width="760">
 
+<p>
+<img src="docs/error-1-reply-fails.png" alt="Step 1. The reply fails: an error bubble, Hmm, that one slipped past me, with a Try again button." width="260">
+<img src="docs/error-3-plan-is-back.png" alt="Step 3. The plan is back after Try again: the riverside tatami room stay card for the Foodie weekend." width="260">
+</p>
+
 ## Card fields that use a filler line
 
 The content comes from the *Kyoto Weekend Prototype Content Pack* workbook. Where the workbook has no value for a field, the card shows a filler line, marked `// filler` in `src/lib/mockReply.ts`.
