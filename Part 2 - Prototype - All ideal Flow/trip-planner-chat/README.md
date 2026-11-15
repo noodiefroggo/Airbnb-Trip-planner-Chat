@@ -95,13 +95,15 @@ Every reply, real or broken, goes through `parseReply` in `src/lib/parseReply.ts
 
 ## Moderated session checklist
 
-The rules below come from *Moderated Session Prototype Requirements: Trip-Planner Chat*, the note that says what a prototype link must meet before UX Research opens it with a guest. Each line was checked against the live link on 15 November 2026, on both session setups, in a fresh private window with nothing logged in.
+The rules below come from *Moderated Session Prototype Requirements: Trip-Planner Chat*, the note that says what a prototype link must meet before UX Research opens it with a guest. Each line was checked against the live link in a fresh private window with nothing logged in.
+
+**Last tested:** Sunday 15 November 2026.
 
 **Session setups**
-- [x] **Phone:** iPhone 14, Safari, about 390px wide, private window, not logged in to Airbnb or Vercel
+- [x] **Phone:** tested on a real phone, no errors (hand test by Arpan). The setup the note asks for: iPhone 14, Safari, about 390px wide, private window, not logged in to Airbnb or Vercel.
 - [x] **Laptop:** 13-inch MacBook Air, Chrome, about 1440px wide, incognito window, not logged in to Airbnb or Vercel. The chat opens as a side panel over the website (see [Desktop version](#desktop-version)).
 
-> The phone setup was run in a private Chrome window at 390px with an iPhone Safari user agent, not on a physical iPhone. A quick tap-through on a real iPhone is still worth doing before the first guest.
+> The phone screenshots and the automated checks (thinking state first, 0 blank samples, no sideways scrolling) come from a fresh private Chrome window at 390px with an iPhone user agent. They show the layout and the flow, but they are not Safari itself.
 
 **What the prototype must do**
 - [x] **3 of 3 cards:** one typed trip request shows a thinking state first, then a stay card, an Experience card and a food card
