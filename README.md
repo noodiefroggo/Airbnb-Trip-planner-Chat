@@ -80,7 +80,7 @@ The thread never ends on a blank screen. Every error comes with a button that br
 
 | State | How to trigger it | What you see |
 |---|---|---|
-| **A: request failed** | Open the page with **`?fail=once`** (e.g. `http://localhost:3000/?fail=once`) and send any trip request | After the thinking animation, an error bubble appears: *"Sorry, I couldn't put your Kyoto weekend together just now…"* with **Try again**. Tapping it reruns the request, and the cards appear. Only the first request fails. |
+| **A: request failed** | Open the page with **`?fail=once`** (e.g. `http://localhost:3000/?fail=once`) and send any trip request | After the thinking animation, an error bubble appears: *"Hmm, that one slipped past me. Your Kyoto weekend is still waiting…"* with **Try again**. Tapping it reruns the request, and the cards appear. Only the first request fails. |
 | **B: can't be planned** | Ask for two places at once, e.g. `plan japan and korea in 2 days` | A suggestion bubble: *"I can only plan one place at a time. Want me to build a weekend in Kyoto?"* with **Go with Kyoto**, which sends the Kyoto request. |
 
 ## Stack

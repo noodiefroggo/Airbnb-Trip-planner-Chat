@@ -240,7 +240,7 @@ export function TripPlannerChat({ open, onClose }: { open: boolean; onClose: () 
                       <AgentBubble tone="error">
                         <p role="alert">
                           <span aria-hidden className="mr-1 font-bold text-[#C13515]">!</span>
-                          Sorry, I couldn&apos;t put your Kyoto weekend together just now. Let&apos;s try again.
+                          Hmm, that one slipped past me. Your Kyoto weekend is still waiting, so let&apos;s give it another go.
                         </p>
                         <div className="mt-2 flex justify-end">
                           <button

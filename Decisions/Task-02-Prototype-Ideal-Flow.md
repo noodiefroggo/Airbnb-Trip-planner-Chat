@@ -245,6 +245,14 @@ Build a clickable prototype of the *ideal* chat flow that leaders and the 8 UX-r
 - **Why:** the stage asks for fake data the app *can't* turn into cards, so the failure has to come from reading bad data, not from a flag that skips the read. Reusing `?fail=once` keeps one documented trigger, it can't be fired by accident in a research session, and it can be shared as a link. The README now says how to fire it.
 - **Impact:** the real scenarios are validated too, so a bad edit to the mock data now shows the error state instead of a crashed card.
 
+### D19. Friendlier, gently persuasive error copy
+- **Chose:** the error bubble now reads "Hmm, that one slipped past me. Your Kyoto weekend is still waiting, so let's give it another go." The red "!", bubble colours and the **Try again** label are unchanged.
+- **Alternatives:**
+  - keep the spec's wording ("Sorry, I couldn't put your Kyoto weekend together just now. Let's try again.");
+  - a stronger nudge such as a deadline or a "don't miss out" line.
+- **Why:** the first version read as a stiff apology. The new line takes the blame lightly and tells the guest their plan isn't lost, which gives them a reason to tap again without pressure. A deadline would be pushy for an error state.
+- **Impact:** the Part 1 spec still holds the original wording as the design record; the code and project README use the new line.
+
 ## Feedback received and how it changed things
 - **Review:** "Ship after must-fixes" → the three must-fixes in D13 were applied.
 - **User:** add all earlier work to the same repo → D2 (whole folder as the repo, duplicate removed, sketches renamed).
