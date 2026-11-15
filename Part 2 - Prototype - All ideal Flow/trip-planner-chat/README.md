@@ -12,14 +12,7 @@ This is a portfolio prototype. It uses Airbnb's name, logo and colours for demon
 
 Requires Node 20+. Run `npm install && npm run dev`, then open http://localhost:3000.
 
-**Broken state:** add `?fail=once` to the URL (e.g. https://airbnb-trip-planner-dusky.vercel.app/?fail=once) and send any trip request. The first reply is a broken mock response the app can't turn into cards, so you get an error bubble with **Try again**.
-
-<img src="docs/error-flow.png" alt="The ?fail=once flow in three steps. 1: the reply fails and an error bubble, Hmm, that one slipped past me, shows with a Try again button. 2: tapping Try again sends the request again and the thinking dots show. 3: the plan comes back, starting with the stay card." width="760">
-
-<p>
-<img src="docs/error-1-reply-fails.png" alt="Step 1. The reply fails: an error bubble, Hmm, that one slipped past me, with a Try again button." width="260">
-<img src="docs/error-3-plan-is-back.png" alt="Step 3. The plan is back after Try again: the riverside tatami room stay card for the Foodie weekend." width="260">
-</p>
+To see the error state, add `?fail=once` to the URL. See [Broken state](#broken-state).
 
 ## Card fields that use a filler line
 
@@ -51,6 +44,40 @@ The request decides which plan you get. The search is faked in `src/lib/planner.
 | Budget + nature | "Kyoto on a budget for 2, under $400, with some nature" | $279 / $400 (the sold-out walk is left out) |
 
 Screenshots of each thread: [Classic Gion](docs/thread-1-classic-gion.png) · [Foodie weekend](docs/thread-2-foodie.png) · [Budget + nature](docs/thread-3-budget-nature.png).
+
+## Broken state
+
+**To fire it:** add `?fail=once` to the URL (https://airbnb-trip-planner-dusky.vercel.app/?fail=once) and send any trip request.
+
+The first reply is a broken mock response the app can't turn into cards. The thread never goes blank: an error bubble appears with **Try again**, and tapping it brings the cards back. Only the first request fails.
+
+<img src="docs/error-flow.png" alt="The ?fail=once flow in three steps. 1: the reply fails and an error bubble, Hmm, that one slipped past me, shows with a Try again button. 2: tapping Try again sends the request again and the thinking dots show. 3: the plan comes back, starting with the stay card." width="760">
+
+### What happens
+
+| Step | What you see |
+|---|---|
+| 1 | You send a request. The input locks and the thinking dots show. |
+| 2 | Card-shaped skeletons show while the reply "loads". |
+| 3 | The reply is checked, fails, and an error bubble replaces the skeletons: *"Hmm, that one slipped past me. Your Kyoto weekend is still waiting, so let's give it another go."* |
+| 4 | **Try again** reruns the same request with real data: thinking dots, skeletons, then the three cards and the trip summary. |
+
+<p>
+<img src="docs/error-1-reply-fails.png" alt="Step 3. The reply fails: an error bubble, Hmm, that one slipped past me, with a Try again button." width="260">
+<img src="docs/error-3-plan-is-back.png" alt="Step 4. The plan is back after Try again: the riverside tatami room stay card for the Foodie weekend." width="260">
+</p>
+
+### What is broken in the data
+
+The broken reply is in `src/lib/brokenReply.ts`. It looks like a real reply but can't become the three cards:
+
+| Card | Problem |
+|---|---|
+| Stay | No name, and the total is the text "three hundred", not a number |
+| Experience | Labelled `activity`, which isn't one of the three card types |
+| Food | Missing, so only two cards come back |
+
+Every reply, real or broken, goes through `parseReply` in `src/lib/parseReply.ts` before it becomes cards. It needs three cards in the order stay → experience → food, each with its required fields. The broken reply fails that check, and the reason is logged to the browser console (`reply rejected: expected 3 cards, got 2`).
 
 ## Stack
 
