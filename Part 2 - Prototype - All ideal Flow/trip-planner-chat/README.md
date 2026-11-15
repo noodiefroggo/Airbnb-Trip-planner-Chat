@@ -14,6 +14,8 @@ Requires Node 20+. Run `npm install && npm run dev`, then open http://localhost:
 
 **Broken state:** add `?fail=once` to the URL (e.g. https://airbnb-trip-planner-dusky.vercel.app/?fail=once) and send any trip request. The first reply is a broken mock response the app can't turn into cards, so you get an error bubble with **Try again**.
 
+<img src="docs/error-state.png" alt="The full thread with ?fail=once. The first request gets an error bubble, Hmm, that one slipped past me, with a Try again button. Tapping it sends the request again and the three Kyoto cards and the $516 trip summary appear." width="320">
+
 ## Card fields that use a filler line
 
 The content comes from the *Kyoto Weekend Prototype Content Pack* workbook. Where the workbook has no value for a field, the card shows a filler line, marked `// filler` in `src/lib/mockReply.ts`.
