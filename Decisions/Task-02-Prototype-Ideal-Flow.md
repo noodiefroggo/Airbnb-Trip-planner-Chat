@@ -229,6 +229,22 @@ Build a clickable prototype of the *ideal* chat flow that leaders and the 8 UX-r
 - **Why:** the content pack marks E3 as sold out. Showing it honestly is a realistic edge case for research, and it keeps the reply at three cards and never blank, as the meeting notes require. E4 has missing data, so it's the weaker swap.
 - **Impact:** the summary shows a strike-through row; the budget logic counts only bookable items.
 
+### D17. A standalone repo for the chat: kyoto-trip-planner
+- **Chose:** publish only the app folder as the public repo [noodiefroggo/kyoto-trip-planner](https://github.com/noodiefroggo/kyoto-trip-planner), with the app at the repo root. It's built with `git subtree split`, so the app's commit history comes along. Its README shows `docs/three-cards.png` (the full Classic Gion thread), the one-line run command `npm install && npm run dev`, and a table of every card field that uses a filler line.
+- **Alternatives:**
+  - keep linking to the app folder inside the whole-project repo;
+  - copy the files into a fresh repo with no history.
+- **Why:** the PM's feedback was that the link pointed at the whole project, with Part 1 and the decision log in it. A repo that holds only the chat answers that directly, and splitting keeps one source of truth: the app is still edited in this project and re-exported.
+- **Impact:** to update it, commit here, then run `git subtree split --prefix="Part 2 - Prototype - All ideal Flow/trip-planner-chat" -b kyoto-trip-planner-export` and `git push kyoto kyoto-trip-planner-export:main`.
+
+### D18. Broken state: a malformed mock reply behind `?fail=once`
+- **Chose:** a deliberately broken mock reply (`src/lib/brokenReply.ts`): the stay has no name and its total is text, the second item is an unknown "activity" card, and the food card is missing. Every reply, real or broken, now goes through `parseReply` (`src/lib/parseReply.ts`), which checks for three cards in stay → experience → food order with their required fields. With `?fail=once`, the first reply is the broken one; it fails the check, the existing error bubble shows with **Try again**, and the reason is logged to the console. Retrying uses the real data.
+- **Alternatives:**
+  - a typed phrase (e.g. "break it") as the trigger;
+  - keep `?fail=once` as a straight jump to the error, with no data involved.
+- **Why:** the stage asks for fake data the app *can't* turn into cards, so the failure has to come from reading bad data, not from a flag that skips the read. Reusing `?fail=once` keeps one documented trigger, it can't be fired by accident in a research session, and it can be shared as a link. The README now says how to fire it.
+- **Impact:** the real scenarios are validated too, so a bad edit to the mock data now shows the error state instead of a crashed card.
+
 ## Feedback received and how it changed things
 - **Review:** "Ship after must-fixes" → the three must-fixes in D13 were applied.
 - **User:** add all earlier work to the same repo → D2 (whole folder as the repo, duplicate removed, sketches renamed).

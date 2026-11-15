@@ -12,6 +12,8 @@ This is a portfolio prototype. It uses Airbnb's name, logo and colours for demon
 
 Requires Node 20+. Run `npm install && npm run dev`, then open http://localhost:3000.
 
+**Broken state:** add `?fail=once` to the URL (e.g. https://airbnb-trip-planner-dusky.vercel.app/?fail=once) and send any trip request. The first reply is a broken mock response the app can't turn into cards, so you get an error bubble with **Try again**.
+
 ## Card fields that use a filler line
 
 The content comes from the *Kyoto Weekend Prototype Content Pack* workbook. Where the workbook has no value for a field, the card shows a filler line, marked `// filler` in `src/lib/mockReply.ts`.

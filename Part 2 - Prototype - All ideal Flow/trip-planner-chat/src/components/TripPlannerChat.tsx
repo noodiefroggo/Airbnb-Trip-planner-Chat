@@ -10,6 +10,8 @@ import { ExperienceCard } from "./cards/ExperienceCard";
 import { FoodCard } from "./cards/FoodCard";
 import { SCENARIOS, SUGGESTED_PROMPT, type Scenario } from "@/lib/mockReply";
 import { planTrip } from "@/lib/planner";
+import { parseReply } from "@/lib/parseReply";
+import { BROKEN_REPLY } from "@/lib/brokenReply";
 
 type Msg =
   | { id: number; role: "user"; text: string }
@@ -125,12 +127,23 @@ export function TripPlannerChat({ open, onClose }: { open: boolean; onClose: () 
           replace({ id: agentId, role: "agent", kind: "loading" });
           timers.current.push(
             window.setTimeout(() => {
-              if (failOnce.current) {
-                failOnce.current = false;
+              const plan = planTrip(text);
+              // ?fail=once swaps the first reply for a broken one the cards can't be built from
+              const raw: unknown = failOnce.current ? BROKEN_REPLY : plan.scenario.items;
+              failOnce.current = false;
+              const parsed = parseReply(raw);
+              if (!parsed.ok) {
+                console.warn(`[trip-planner] reply rejected: ${parsed.reason}`);
                 replace({ id: agentId, role: "agent", kind: "error", retryPrompt: text });
               } else {
-                const plan = planTrip(text);
-                replace({ id: agentId, role: "agent", kind: "reply", scenario: plan.scenario, budget: plan.budget, intro: plan.intro });
+                replace({
+                  id: agentId,
+                  role: "agent",
+                  kind: "reply",
+                  scenario: { ...plan.scenario, items: parsed.items },
+                  budget: plan.budget,
+                  intro: plan.intro,
+                });
               }
               setLocked(false);
             }, LOADING_MS),
