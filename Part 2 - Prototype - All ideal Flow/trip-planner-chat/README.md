@@ -14,7 +14,7 @@ Requires Node 20+. Run `npm install && npm run dev`, then open http://localhost:
 
 **Broken state:** add `?fail=once` to the URL (e.g. https://airbnb-trip-planner-dusky.vercel.app/?fail=once) and send any trip request. The first reply is a broken mock response the app can't turn into cards, so you get an error bubble with **Try again**.
 
-<img src="docs/error-state.png" alt="The full thread with ?fail=once. The first request gets an error bubble, Hmm, that one slipped past me, with a Try again button. Tapping it sends the request again and the three Kyoto cards and the $516 trip summary appear." width="320">
+<img src="docs/error-flow.png" alt="The ?fail=once flow in three steps. 1: the reply fails and an error bubble, Hmm, that one slipped past me, shows with a Try again button. 2: tapping Try again sends the request again and the thinking dots show. 3: the plan comes back, starting with the stay card." width="760">
 
 ## Card fields that use a filler line
 
