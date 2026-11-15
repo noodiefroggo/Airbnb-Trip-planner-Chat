@@ -326,6 +326,9 @@ export function TripPlannerChat({ open, onClose }: { open: boolean; onClose: () 
               </svg>
             </button>
           </form>
+          <p className="mt-2 text-center text-[12px] leading-snug text-muted" data-testid="sample-note">
+            Sample trips only. Nothing is booked.
+          </p>
         </div>
       </section>
     </div>

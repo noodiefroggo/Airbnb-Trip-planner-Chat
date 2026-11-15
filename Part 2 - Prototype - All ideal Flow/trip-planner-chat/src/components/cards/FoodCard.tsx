@@ -45,10 +45,10 @@ export function FoodCard({ details }: { details: FoodDetails }) {
       </div>
 
       {serves ? (
-        <ul className="-mr-4 mt-3 flex snap-x gap-3 overflow-x-auto pr-4 pb-1 [scrollbar-width:none]" aria-label="Sample menu">
+        <ul className="mt-3 grid grid-cols-3 gap-x-3 gap-y-3.5" aria-label="Sample menu">
           {d.menuItems.map((m, i) => (
-            <li key={m.itemName} className="w-[96px] shrink-0 snap-start">
-              <div className="relative size-[96px] overflow-hidden rounded-xl">
+            <li key={m.itemName} className="min-w-0">
+              <div className="relative aspect-square w-full overflow-hidden rounded-xl">
                 <DishArt dish={m.dish} index={i} className="size-full" />
                 <span
                   title={m.dietLabel === "veg" ? "Vegetarian" : "Non-vegetarian"}
@@ -60,7 +60,7 @@ export function FoodCard({ details }: { details: FoodDetails }) {
                   <span className="sr-only">{m.dietLabel}</span>
                 </span>
               </div>
-              <p className="mt-1.5 truncate text-[13px] font-medium text-ink">{m.itemName}</p>
+              <p className="mt-1.5 break-words text-[13px] font-medium leading-tight text-ink">{m.itemName}</p>
               <p className="text-[12px] text-muted">
                 ${m.priceUsd} · {m.portion}
               </p>

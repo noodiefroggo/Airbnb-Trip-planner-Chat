@@ -253,6 +253,15 @@ Build a clickable prototype of the *ideal* chat flow that leaders and the 8 UX-r
 - **Why:** the first version read as a stiff apology. The new line takes the blame lightly and tells the guest their plan isn't lost, which gives them a reason to tap again without pressure. A deadline would be pushy for an error state.
 - **Impact:** the Part 1 spec still holds the original wording as the design record; the code and project README use the new line.
 
+### D20. Passing the moderated-session requirements: sample-data note and a wrapping menu
+- **Chose:** two changes after checking the app against *Moderated Session Prototype Requirements: Trip-Planner Chat*. First, a permanent line under the message box: "Sample trips only. Nothing is booked." Second, the food card's menu is now a three-column grid that wraps, instead of a sideways-scrolling row.
+- **Alternatives:**
+  - put the sample-data wording in the greeting bubble only;
+  - keep the sideways menu and ask UX Research to accept it;
+  - show only the first three dishes.
+- **Why:** the requirements say a guest must never believe a real booking is being made, so the wording has to be visible in every state, including failure. They also say nothing may be cut off or need sideways scrolling at phone width, and the old menu cut off its third dish. A wrapping grid shows every dish and keeps the food card's look (square photo, meal chips, veg / non-veg dots).
+- **Impact:** this overrides the Part 1 sketch's "sideways-scrolling menu row" for this stage. The checklist in the README is ticked from a run on both setups (phone at 390px, laptop at 1440px) with 0 blank samples. The phone run used Chrome with an iPhone Safari user agent, not a real iPhone.
+
 ## Feedback received and how it changed things
 - **Review:** "Ship after must-fixes" → the three must-fixes in D13 were applied.
 - **User:** add all earlier work to the same repo → D2 (whole folder as the repo, duplicate removed, sketches renamed).

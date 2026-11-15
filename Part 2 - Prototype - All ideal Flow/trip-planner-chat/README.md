@@ -1,6 +1,6 @@
-# Kyoto trip planner: three-card stage
+**Live prototype:** https://airbnb-trip-planner-dusky.vercel.app
 
-**Live:** https://airbnb-trip-planner-dusky.vercel.app
+# Kyoto trip planner: three-card stage
 
 A chat prototype inside the Airbnb mobile app. You ask for a weekend trip, and the chat replies with **three cards**: a stay, an experience and a meal. A trip summary under the cards checks the total against your budget.
 
@@ -27,7 +27,7 @@ The content comes from the *Kyoto Weekend Prototype Content Pack* workbook. Wher
 | Experience | Distance from the stay | e.g. "10 min away" |
 | Experience | Photo | A drawn illustration |
 | Food | Rating and review count | e.g. ★ 4.7 · 320 reviews |
-| Food | Menu row (dishes, prices, portions, veg / non-veg) | e.g. Shio ramen $12 · 1 bowl |
+| Food | Menu (dishes, prices, portions, veg / non-veg) | e.g. Shio ramen $12 · 1 bowl |
 | Food | Booking note (Sagano Yudofu-tei only) | "Walk-ins welcome at lunch" |
 | Food | Photo | A drawn illustration |
 
@@ -78,6 +78,57 @@ The broken reply is in `src/lib/brokenReply.ts`. It looks like a real reply but 
 | Food | Missing, so only two cards come back |
 
 Every reply, real or broken, goes through `parseReply` in `src/lib/parseReply.ts` before it becomes cards. It needs three cards in the order stay → experience → food, each with its required fields. The broken reply fails that check, and the reason is logged to the browser console (`reply rejected: expected 3 cards, got 2`).
+
+## Moderated session checklist
+
+The rules below come from *Moderated Session Prototype Requirements: Trip-Planner Chat*, the note that says what a prototype link must meet before UX Research opens it with a guest. Each line was checked against the live link on 15 November 2026, on both session setups, in a fresh private window with nothing logged in.
+
+**Session setups**
+- [x] **Phone:** iPhone 14, Safari, about 390px wide, private window, not logged in to Airbnb or Vercel
+- [x] **Laptop:** 13-inch MacBook Air, Chrome, about 1440px wide, incognito window, not logged in to Airbnb or Vercel
+
+> The phone setup was run in a private Chrome window at 390px with an iPhone Safari user agent, not on a physical iPhone. A quick tap-through on a real iPhone is still worth doing before the first guest.
+
+**What the prototype must do**
+- [x] **3 of 3 cards:** one typed trip request shows a thinking state first, then a stay card, an Experience card and a food card
+- [x] **Clearly different cards:** each card is its own component with its own layout, not one layout with the text swapped
+- [x] **Phone width:** nothing is cut off and nothing needs sideways scrolling (the food menu is a wrapping grid, not a sideways row)
+- [x] **Friendly failure:** the forced failure shows a friendly message and a **Try again** button inside the assistant bubble
+- [x] **0 blank-chat moments:** at the moment of failure, when **Try again** is pressed and the moment after, the chat always shows something (0 blank samples in 80 ms checks on both setups)
+- [x] **Try again works:** pressing it brings the three cards back
+- [x] **No login:** the link needs no install, no login and no configuration
+- [x] **Mocked data note:** the chat always shows "Sample trips only. Nothing is booked." under the message box
+
+**Vercel link**
+- [x] Only the production domain is shared: https://airbnb-trip-planner-dusky.vercel.app. Preview links (long URLs with a hash) ask for a Vercel login, so they are never shared.
+- [x] The link loads in a private window with no login
+- [x] The newest deployment showed as ready before testing. This project isn't connected to Git, so pushes don't redeploy it; each change is deployed from the command line.
+
+### Evidence: both paths on both setups
+
+Each setup ran the happy path (the pre-filled request) and the error path (`?fail=once`, then **Try again**).
+
+| Setup | Cards | Error bubble | Cards after retry |
+|---|---|---|---|
+| **Phone** (390px) | <img src="docs/moderated-checks/phone-1-cards.png" alt="Phone: the happy path, with the stay, experience and food cards and the trip summary." width="200"> | <img src="docs/moderated-checks/phone-2-error.png" alt="Phone: the error bubble with a Try again button." width="200"> | <img src="docs/moderated-checks/phone-3-after-retry.png" alt="Phone: the three cards back after Try again." width="200"> |
+| **Laptop** (1440px) | <img src="docs/moderated-checks/laptop-1-cards.png" alt="Laptop: the happy path inside the phone frame." width="200"> | <img src="docs/moderated-checks/laptop-2-error.png" alt="Laptop: the error bubble with a Try again button." width="200"> | <img src="docs/moderated-checks/laptop-3-after-retry.png" alt="Laptop: the three cards back after Try again." width="200"> |
+
+## Message for the team
+
+| Item | Detail |
+|---|---|
+| Where to post | #search-trip-planner on Slack |
+| Who it is for | Hannah Brooks, Tomás Herrera, Priya Raman, Daniel Okafor |
+| Dry run | Thursday 13 March 2025 |
+| First moderated guest sessions | 1 April 2025 |
+
+> Hi Hannah, Tomás, Priya and Daniel, the Trip-planner chat prototype is ready for Thursday's dry run (13 March). Link: https://airbnb-trip-planner-dusky.vercel.app. No login or install; trips are sample data and nothing is booked.
+>
+> **Happy path:** send the pre-filled request, "find me a weekend trip in tokyo for 2 people under 600 dollars". You'll see thinking dots, skeletons, then three cards.
+>
+> **Error path:** add `?fail=once` to the link, send any request, then tap **Try again**.
+>
+> First guest sessions: 1 April.
 
 ## Stack
 
